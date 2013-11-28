@@ -2,9 +2,10 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/aima-core"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/aima-gui"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/aimax-osm"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/VacuumEnvironmentB"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/EnvB"/>
+	<classpathentry kind="lib" path="/home/garulf/info/esami/SI/code/VacuumEnvironmentGenerator/VacuumCore/lib/aima/aima-core.jar"/>
+	<classpathentry kind="lib" path="/home/garulf/info/esami/SI/code/VacuumEnvironmentGenerator/VacuumCore/lib/aima/aima-gui.jar"/>
+	<classpathentry kind="lib" path="/home/garulf/info/esami/SI/code/VacuumEnvironmentGenerator/VacuumCore/lib/aima/aimax-osm.jar"/>
+	<classpathentry kind="lib" path="/home/garulf/info/esami/SI/code/VacuumEnvironmentGenerator/VacuumCore/lib/aima/commons-compress-1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

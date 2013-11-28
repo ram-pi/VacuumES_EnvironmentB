@@ -11,7 +11,7 @@ import aima.core.agent.impl.AbstractAgent;
 import core.LocalVacuumEnvironmentPerceptTaskEnvironmentB;
 
 public class VacuumAgentES extends AbstractAgent {
-	
+	//just test
 	public Action suck, left, down, right, up;
 
 	public VacuumAgentES() {
