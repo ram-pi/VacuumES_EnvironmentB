@@ -8,6 +8,7 @@ import aima.core.agent.Action;
 import aima.core.agent.AgentProgram;
 import aima.core.agent.Percept;
 import aima.core.agent.impl.AbstractAgent;
+import aima.core.agent.impl.NoOpAction;
 import core.LocalVacuumEnvironmentPerceptTaskEnvironmentB;
 
 public class VacuumAgentES extends AbstractAgent {
@@ -18,6 +19,7 @@ public class VacuumAgentES extends AbstractAgent {
 		super(new AgentProgram() {
 			@Override
 			public Action execute(final Percept percept) {
+				
 				final LocalVacuumEnvironmentPerceptTaskEnvironmentB vep = (LocalVacuumEnvironmentPerceptTaskEnvironmentB) percept;
 				final Set<Action> actionsKeySet = vep.getActionEnergyCosts().keySet();
 

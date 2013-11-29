@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<!-- Configuration of the Ant build system to generate a Jar file --> 
+<project name="VacuumES_EnvironmentB" default="jar">
+  <target name="jar" description="Create Jar file">
+        <jar jarfile="./jar/vacuumAgentES.jar" basedir="./bin/" includes="**/*.class" />
+  </target>
+</project>
+
