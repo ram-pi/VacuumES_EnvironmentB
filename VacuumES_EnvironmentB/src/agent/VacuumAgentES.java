@@ -4,6 +4,10 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 
+import utils.MapKB;
+import utils.VacuumMapsUtils;
+import utils.VacuumMapsUtils.Movement;
+
 import aima.core.agent.Action;
 import aima.core.agent.AgentProgram;
 import aima.core.agent.Percept;
@@ -15,25 +19,56 @@ public class VacuumAgentES extends AbstractAgent {
 	//just test
 	public Action suck, left, down, right, up;
 
+
+
 	public VacuumAgentES() {
 		super(new AgentProgram() {
+			private int step;
+			public Movement lastMovement;
+			private VacuumMapsUtils map;
+			private Random random;
+
+			/* Anonymous constructor */
+			{
+				this.step = 0;
+				this.map = new MapKB(this);
+				this.random = new Random();
+			}
+
 			@Override
 			public Action execute(final Percept percept) {
-				
+
 				final LocalVacuumEnvironmentPerceptTaskEnvironmentB vep = (LocalVacuumEnvironmentPerceptTaskEnvironmentB) percept;
+
+				if (this.step == 0) {
+					this.map.setInitialTile(vep);
+				}
+				else {
+					this.map.updateMap(vep, this.lastMovement);
+				}
+
+				this.step++;
+
 				final Set<Action> actionsKeySet = vep.getActionEnergyCosts().keySet();
 
 
-				new Random();
-				final int randomInt = new Random().nextInt(actionsKeySet.size());
-				final Iterator<Action> iterator = actionsKeySet.iterator();
-				for (int i = 0; i < randomInt; i++)
-					iterator.next();
-				return iterator.next();
+				int randomInt = this.random.nextInt(4);
+
+				this.lastMovement = (Movement.values())[randomInt];
+
+				System.out.println(this.lastMovement);
+				System.out.println(randomInt+1);
+				System.out.println(this.map);
+				return (Action)actionsKeySet.toArray()[randomInt+1];
+
+
 			}
 		});
+
+
+
 	}
-	
+
 	public void init (Set<Action> actionKeySet) {
 		suck = (Action) actionKeySet.toArray()[0];
 		left = (Action) actionKeySet.toArray()[1];

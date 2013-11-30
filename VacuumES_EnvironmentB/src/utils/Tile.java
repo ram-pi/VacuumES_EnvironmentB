@@ -2,45 +2,60 @@ package utils;
 
 import java.awt.Point;
 
+import core.LocalVacuumEnvironmentPerceptTaskEnvironmentB;
+
 
 public class Tile {
-    private Point p;
+	private Point point;
 
-    private boolean wall;
-    private boolean obstacle;
-    private boolean dirty;
+	private boolean wall;
+	private boolean obstacle;
+	private boolean dirty;
+	private boolean base;
 
-    public Tile (Point p, boolean wall, boolean obstacle, boolean dirty) {
-	this.wall = wall;
-	this.obstacle = obstacle;
-	this.dirty = dirty;
-    }
+	private int dirtyAmount;
 
-    public boolean isWall () {
-	return this.wall;
-    }
+	public Tile (Point p, boolean wall, boolean obstacle, boolean dirty, boolean base) {
+		this.wall = wall;
+		this.obstacle = obstacle;
+		this.dirty = dirty;
+		this.base = base;
+		this.dirtyAmount = 0;
+		this.point = p;
+	}
 
-    public boolean isObstacle () {
-	return this.obstacle;
-    }
 
-    public boolean isDirty () {
-	return this.dirty;
-    }
+	public boolean isBase () {
+		return this.base;
+	}
 
-    public void setWall(boolean w) {
-	this.wall = w;
-    }
+	public boolean isWall () {
+		return this.wall;
+	}
 
-    public void setObstacel(boolean o) {
-	this.obstacle = o;
-    }
+	public boolean isObstacle () {
+		return this.obstacle;
+	}
 
-    public void setDirty(boolean d) {
-	this.dirty = d;
-    }
+	public boolean isDirty () {
+		return this.dirty;
+	}
 
-    public Point getPoint () {
-	return this.p;
-    }
+	public void setWall(boolean w) {
+		this.wall = w;
+	}
+
+	public void setObstacel(boolean o) {
+		this.obstacle = o;
+	}
+
+	public void setDirty(boolean d) {
+		this.dirty = d;
+	}
+
+	public Point getPoint () {
+		return this.point;
+	}
+
+
 }
