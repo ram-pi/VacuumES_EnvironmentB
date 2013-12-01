@@ -1,18 +1,22 @@
 package utils;
 
-import instanceXMLParser.CellLogicalState;
+
 
 import java.awt.Point;
 
-import aima.core.agent.Action;
+
 import aima.core.agent.AgentProgram;
-import aima.core.agent.impl.AbstractAgent;
+
 
 import core.LocalVacuumEnvironmentPerceptTaskEnvironmentB;
 import core.VacuumEnvironment.LocationState;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+
+
 
 
 
@@ -26,13 +30,13 @@ public class MapKB implements VacuumMapsUtils {
 	private AgentProgram agent;
 
 
-	private Point currentPosition;
+	private Tile currentPosition;
 
 	public MapKB(AgentProgram a) {
 		this.agent = a;
 		this.map = new HashMap<Point, Tile>();
 		this.base = null;
-		this.currentPosition = new Point (0,0);
+		
 	}
 
 	private void setTile(Tile t) {
@@ -44,6 +48,8 @@ public class MapKB implements VacuumMapsUtils {
 		Tile t = new Tile (new Point(0,0), false, false, dirty, vep.isOnBase());
 
 		this.setTile(t);
+		currentPosition = t;
+		
 		if (vep.isOnBase())
 			this.setBase(t);
 
@@ -56,18 +62,46 @@ public class MapKB implements VacuumMapsUtils {
 		this.base = t;
 	}
 
+	
 	public boolean isVisited(Point p) {
-		return false;
+		return this.map.containsKey(p);
 	}
 
+	
+	public boolean isVisited(Tile t) {
+		return this.map.containsKey(t.getPoint());
+	}
+
+	//TODO check if is visited e
 	public boolean isWall(Point p) {
+		return this.map.get(p).isWall();
+	}
+
+	public boolean isWall(Tile t) {
+		if (this.isVisited(t))
+			return this.map.get(t.getPoint()).isWall();
+		
+		//TODO some err
 		return false;
+	}
+	
+	public boolean isObstacle(Point p) {
+		if (this.getTile(p) != null)
+			return this.map.get(p).isWall();
+		
+		//TODO some err
+		return false;
+	}
+	
+	/* return null if not visited yet */
+	public Tile getTile(Point p) {
+		return this.map.get(p); 
 	}
 
 	public void updateMap (LocalVacuumEnvironmentPerceptTaskEnvironmentB vep, Movement lastAction) {
 
-		int lastX = this.currentPosition.x;
-		int lastY = this.currentPosition.y;
+		int lastX = this.currentPosition.getPoint().x;
+		int lastY = this.currentPosition.getPoint().y;
 
 		Point p = null;
 
@@ -112,13 +146,47 @@ public class MapKB implements VacuumMapsUtils {
 					vep.isOnBase()); 
 			this.setTile(t);
 
-			this.currentPosition = p;
+			this.currentPosition = t;
 		}
 	}
 
 	/* return null if base not found yet */
 	public Tile getBase() {
 		return this.base;
+	}
+	
+	@Override
+	public List<Point> getAdjWalkablePoints(Point from) {
+		List<Point> ret = new LinkedList<Point>();
+				
+		/* left */
+		Point p = new Point(from.x, from.y);
+		p.x -= 1;
+		/* if (!isVisited(p) || isVisited(p) && !isObstacle(p)) */
+		if (!isVisited(p) || !isObstacle(p))
+			ret.add(p);
+			
+		/* down */
+		p = new Point(from.x, from.y);
+		p.y -= 1;
+		if (!isVisited(p) || !isObstacle(p))
+			ret.add(p);
+
+		/* right */
+		p = new Point(from.x, from.y);
+		p.x += 1;
+		if (!isVisited(p) || !isObstacle(p)) 
+			ret.add(p);
+
+		/* up*/
+		p = new Point(from.x, from.y);
+		p.y += 1;
+		if (!isVisited(p) || !isObstacle(p)) 
+			ret.add(p);
+
+		return ret;
+		
+		
 	}
 
 	@Override
@@ -133,6 +201,26 @@ public class MapKB implements VacuumMapsUtils {
 			sb.append("\n");
 		}
 		return sb.toString();
+	}
+
+	@Override
+	public Tile getCurrentPosition() {
+		return this.currentPosition;
+	}
+
+	@Override
+	public Point getCurrentPositionPoint() {
+		return this.getCurrentPosition().getPoint();
+	}
+
+	@Override
+	public int manatthanDistance(Point from, Point to) {
+		return Math.abs(from.x - to.x) + Math.abs(from.y - to.y);
+	}
+	
+	public double eucladianDistance(Point from, Point to) {
+		
+		return Math.sqrt(Math.pow(to.x-from.x,2)+Math.pow(to.y-from.y, 2));
 	}
 
 }

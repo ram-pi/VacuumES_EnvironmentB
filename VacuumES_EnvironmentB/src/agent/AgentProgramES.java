@@ -3,6 +3,7 @@ package agent;
 import java.util.Random;
 import java.util.Set;
 
+import utils.Explorer;
 import utils.MapKB;
 import utils.VacuumMapsUtils;
 import utils.VacuumMapsUtils.Movement;
@@ -16,15 +17,45 @@ public class AgentProgramES implements AgentProgram {
 	private int step;
 	public Movement lastMovement;
 	private VacuumMapsUtils map;
-	private Random random;
+	private Explorer explorer;
+	
+	
+	private Action suck, left, down, right, up;
 
+	private void init (Set<Action> actionKeySet) {
+		suck = (Action) actionKeySet.toArray()[0];
+		left = (Action) actionKeySet.toArray()[1];
+		down = (Action) actionKeySet.toArray()[2];
+		right = (Action) actionKeySet.toArray()[3];
+		up = (Action) actionKeySet.toArray()[4];
+	}
+	
+	private Action actionFromMovement(Movement m) {
+		switch(m) {
+			case left:
+				return left;
+			case down:
+				return down;
+			case right:
+				return right;
+			case up:
+				return up;
+		}
+		return null;
+	}
+	
 	public AgentProgramES ()
 	{
 		this.step = 0;
 		this.map = new MapKB(this);
-		this.random = new Random();
+		this.explorer = new Explorer(this);
+		
+	
 	}
 
+	public VacuumMapsUtils getMap() {
+		return this.map;
+	}
 	
 	@Override
 	public Action execute(final Percept percept) {
@@ -33,26 +64,20 @@ public class AgentProgramES implements AgentProgram {
 
 		if (this.step == 0) {
 			this.map.setInitialTile(vep);
+			explorer.init(map.getCurrentPositionPoint());
+			init(vep.getActionEnergyCosts().keySet());	
 		}
 		else {
 			this.map.updateMap(vep, this.lastMovement);
 		}
 
 		this.step++;
-
-		final Set<Action> actionsKeySet = vep.getActionEnergyCosts().keySet();
-
-
-		int randomInt = this.random.nextInt(4);
-
-		this.lastMovement = (Movement.values())[randomInt];
-
-		System.out.println(this.lastMovement);
-		System.out.println(randomInt+1);
-		System.out.println(this.map);
-		return (Action)actionsKeySet.toArray()[randomInt+1];
+		this.lastMovement = explorer.nextAction();
+		
+		
+		return actionFromMovement(lastMovement);
 
 
 	}
-
+	
 }
