@@ -133,6 +133,7 @@ public class Explorer implements VacuumExplorationUtils {
 	public Movement chooseRouteNextMovement(PointExp dest) {
 		if (dest == null) {
 			//TODO error 
+			return null;
 		}
 		Point curr = this.map.getCurrentPositionPoint();
 		/* if adj */

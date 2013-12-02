@@ -8,6 +8,7 @@ import core.LocalVacuumEnvironmentPerceptTaskEnvironmentB;
 public class Tile {
 	private Point point;
 
+
 	private boolean wall;
 	private boolean obstacle;
 	private boolean dirty;
@@ -57,5 +58,8 @@ public class Tile {
 		return this.point;
 	}
 
+	public void setPoint(Point point) {
+		this.point = point;
+	}
 
 }

@@ -24,28 +24,82 @@ public class MapKB implements VacuumMapsUtils {
 
 
 	private Map<Point, Tile> map;
-	private int m,n;
+	private int cols,rows;
 
 	private Tile base;
 	private AgentProgram agent;
 
-
 	private Tile currentPosition;
+	
+	/* for wall detection */
+	int minX, maxX, minY, maxY;
+	private boolean rowsWallsDetected;
+	private boolean colsWallsDetected;
 
 	public MapKB(AgentProgram a) {
 		this.agent = a;
 		this.map = new HashMap<Point, Tile>();
 		this.base = null;
+		minX = maxX = minY = maxY = 0;
 		
 	}
 
+	private void updateMinMax(Tile t) {
+		if (t.isObstacle())
+			return;
+
+		if (!rowsWallsDetected) {
+			if (t.getPoint().x < minX)
+				minX = t.getPoint().x;
+			if (t.getPoint().x > maxX)
+				maxX = t.getPoint().x;
+		}
+		if (!colsWallsDetected) {
+			if (t.getPoint().y < minY)
+				minY = t.getPoint().y;
+
+			if (t.getPoint().y > maxY)
+				maxY = t.getPoint().y;
+		}
+	}
+	
 	private void setTile(Tile t) {
+		updateMinMax(t);
 		this.map.put(t.getPoint(), t);
+	}
+	
+	/* Can we known where are the walls ? */
+	private void checkWalls() {
+		Tile t;
+		if (maxX - minX == cols-1 && !rowsWallsDetected) {
+			rowsWallsDetected = true;
+			for (int i = 0 - rows; i < rows; i++) {
+				t = new Tile(new Point(minX-1, i), true, true, false, false);
+				setTile(t);
+				t = new Tile(new Point(maxX+1, i), true, true, false, false);
+				setTile(t);
+			}
+		}
+		
+		if (maxY - minY == rows-1 && !colsWallsDetected) {
+			colsWallsDetected = true;
+			
+			for (int i = 0 - cols; i < cols; i++) {
+				t = new Tile(new Point(i, minY-1), true, true, false, false);
+				setTile(t);
+				t = new Tile(new Point(i, maxY+1), true, true, false, false);
+				setTile(t);
+			}
+		}
+
 	}
 
 	public void setInitialTile(LocalVacuumEnvironmentPerceptTaskEnvironmentB vep) {
 		boolean dirty = (vep.getState().getLocState() == LocationState.Clean) ? false : true;
 		Tile t = new Tile (new Point(0,0), false, false, dirty, vep.isOnBase());
+		
+		rows = vep.getN();
+		cols = vep.getM();
 
 		this.setTile(t);
 		currentPosition = t;
@@ -100,6 +154,7 @@ public class MapKB implements VacuumMapsUtils {
 
 	public void updateMap (LocalVacuumEnvironmentPerceptTaskEnvironmentB vep, Movement lastAction) {
 
+		
 		int lastX = this.currentPosition.getPoint().x;
 		int lastY = this.currentPosition.getPoint().y;
 
@@ -148,6 +203,9 @@ public class MapKB implements VacuumMapsUtils {
 
 			this.currentPosition = t;
 		}
+		
+		if (!colsWallsDetected || !rowsWallsDetected)
+			checkWalls();
 	}
 
 	/* return null if base not found yet */

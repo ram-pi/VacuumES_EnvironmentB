@@ -4,6 +4,7 @@ import java.util.Random;
 import java.util.Set;
 
 import utils.Explorer;
+import utils.Logger;
 import utils.MapKB;
 import utils.VacuumMapsUtils;
 import utils.VacuumMapsUtils.Movement;
@@ -11,6 +12,7 @@ import core.LocalVacuumEnvironmentPerceptTaskEnvironmentB;
 import aima.core.agent.Action;
 import aima.core.agent.AgentProgram;
 import aima.core.agent.Percept;
+import aima.core.agent.impl.NoOpAction;
 
 public class AgentProgramES implements AgentProgram {
 
@@ -18,6 +20,7 @@ public class AgentProgramES implements AgentProgram {
 	public Movement lastMovement;
 	private VacuumMapsUtils map;
 	private Explorer explorer;
+	private Logger log;
 	
 	
 	private Action suck, left, down, right, up;
@@ -74,7 +77,10 @@ public class AgentProgramES implements AgentProgram {
 		this.step++;
 		this.lastMovement = explorer.nextAction();
 		
-		
+		if (lastMovement == null) {
+			System.out.println("null movement..");
+			
+		}
 		return actionFromMovement(lastMovement);
 
 
