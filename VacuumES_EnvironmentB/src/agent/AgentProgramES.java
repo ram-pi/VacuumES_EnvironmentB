@@ -9,6 +9,7 @@ import utils.MapKB;
 import utils.VacuumMapsUtils;
 import utils.VacuumMapsUtils.Movement;
 import core.LocalVacuumEnvironmentPerceptTaskEnvironmentB;
+import core.VacuumEnvironment.LocationState;
 import aima.core.agent.Action;
 import aima.core.agent.AgentProgram;
 import aima.core.agent.Percept;
@@ -21,6 +22,7 @@ public class AgentProgramES implements AgentProgram {
 	private VacuumMapsUtils map;
 	private Explorer explorer;
 	private Logger log;
+	private boolean baseFound;
 	
 	
 	private Action suck, left, down, right, up;
@@ -65,6 +67,13 @@ public class AgentProgramES implements AgentProgram {
 
 		final LocalVacuumEnvironmentPerceptTaskEnvironmentB vep = (LocalVacuumEnvironmentPerceptTaskEnvironmentB) percept;
 
+		if (vep.getState().getLocState() == LocationState.Dirty && !baseFound) {
+//			lastMovement = null;
+//			return suck;
+		} else if (vep.getState().getLocState() == LocationState.Dirty && baseFound) {
+			// Count if the energy is enough to reach the base
+		}
+		
 		if (this.step == 0) {
 			this.map.setInitialTile(vep);
 			explorer.init(map.getCurrentPositionPoint());
@@ -73,8 +82,15 @@ public class AgentProgramES implements AgentProgram {
 		else {
 			this.map.updateMap(vep, this.lastMovement);
 		}
-
+		
+		if (vep.isOnBase() && baseFound) {
+			//todo
+		}
+		
 		this.step++;
+		
+		
+
 		this.lastMovement = explorer.nextAction();
 		
 		if (lastMovement == null) {

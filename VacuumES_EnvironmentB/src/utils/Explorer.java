@@ -40,6 +40,8 @@ public class Explorer implements VacuumExplorationUtils {
 	private AgentProgramES agent;
 	private VacuumMapsUtils map;
 	private PointExp start;
+	private List<Point> path;
+	
 
 
 
@@ -48,6 +50,7 @@ public class Explorer implements VacuumExplorationUtils {
 		this.closedList = new LinkedList<PointExp>();
 		this.openList = new LinkedList<PointExp>();
 		this.map = agent.getMap();
+		path = new LinkedList<Point>();
 	}
 
 
@@ -122,7 +125,7 @@ public class Explorer implements VacuumExplorationUtils {
 		}
 
 		
-		Movement m = this.chooseRouteNextMovement(findPointInClosedList(go)); //TODO change name
+		Movement m = this.chooseRouteNextMovement(go); //TODO change name
 		closedList.remove(go);
 		openList.add(go);
 		
@@ -151,10 +154,18 @@ public class Explorer implements VacuumExplorationUtils {
 		}
 		else {
 			PointExp go = findPointInOpenList(map.getCurrentPositionPoint());
-			return chooseRouteNextMovement(go.from);
 			
+			if (path.size() == 0) {
+				findPathToPoint(dest);
+			}
+			return chooseRouteNextMovement(new PointExp(path.remove(0)));
 		}
 
+	}
+	
+	private void findPathToPoint(Point dest) {
+		Astar a = new Astar(map);
+		path = a.astar(map.getCurrentPositionPoint(), dest).getPointPath();
 	}
 
 }

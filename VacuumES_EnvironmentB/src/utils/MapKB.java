@@ -141,7 +141,7 @@ public class MapKB implements VacuumMapsUtils {
 	
 	public boolean isObstacle(Point p) {
 		if (this.getTile(p) != null)
-			return this.map.get(p).isWall();
+			return this.map.get(p).isObstacle();
 		
 		//TODO some err
 		return false;
@@ -154,6 +154,9 @@ public class MapKB implements VacuumMapsUtils {
 
 	public void updateMap (LocalVacuumEnvironmentPerceptTaskEnvironmentB vep, Movement lastAction) {
 
+		/* we don't move in the last step */
+		if (lastAction == null)
+			return;
 		
 		int lastX = this.currentPosition.getPoint().x;
 		int lastY = this.currentPosition.getPoint().y;
@@ -200,9 +203,14 @@ public class MapKB implements VacuumMapsUtils {
 					(vep.getState().getLocState() == LocationState.Dirty), 
 					vep.isOnBase()); 
 			this.setTile(t);
+			
+			if (vep.isOnBase())
+				setBase(t);
 
 			this.currentPosition = t;
 		}
+		
+		System.out.println(getCurrentPosition().getPoint());
 		
 		if (!colsWallsDetected || !rowsWallsDetected)
 			checkWalls();
@@ -221,25 +229,25 @@ public class MapKB implements VacuumMapsUtils {
 		Point p = new Point(from.x, from.y);
 		p.x -= 1;
 		/* if (!isVisited(p) || isVisited(p) && !isObstacle(p)) */
-		if (!isVisited(p) || !isObstacle(p))
+		if (!isObstacle(p))
 			ret.add(p);
 			
 		/* down */
 		p = new Point(from.x, from.y);
 		p.y -= 1;
-		if (!isVisited(p) || !isObstacle(p))
+		if (!isObstacle(p))
 			ret.add(p);
 
 		/* right */
 		p = new Point(from.x, from.y);
 		p.x += 1;
-		if (!isVisited(p) || !isObstacle(p)) 
+		if (!isObstacle(p)) 
 			ret.add(p);
 
 		/* up*/
 		p = new Point(from.x, from.y);
 		p.y += 1;
-		if (!isVisited(p) || !isObstacle(p)) 
+		if (!isObstacle(p)) 
 			ret.add(p);
 
 		return ret;
