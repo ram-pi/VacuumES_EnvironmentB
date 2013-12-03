@@ -101,7 +101,15 @@ public class Explorer implements VacuumExplorationUtils {
 			System.out.println("No ADJ!");
 			
 			int min = Integer.MAX_VALUE;
-			for (PointExp p: closedList) {
+
+			
+			for (PointExp p: new LinkedList<PointExp>(closedList)) {
+				
+				if (map.isObstacle(p)) {
+					closedList.remove(p);
+					continue;
+				}
+				
 				int d = map.manatthanDistance(current, p);
 				if (d < min) {
 					min = d;
