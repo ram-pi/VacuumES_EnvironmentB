@@ -76,7 +76,7 @@ public class AgentProgramES implements AgentProgram {
 			this.map.updateMap(vep, this.lastMovement);
 		}
 		if (vep.getState().getLocState() == LocationState.Dirty && !baseFound) {
-			lastMovement = null;
+			lastMovement = Movement.nomove;
 			return suck;
 		} else if (vep.getState().getLocState() == LocationState.Dirty && baseFound) {
 			// Count if the energy is enough to reach the base
