@@ -83,6 +83,8 @@ public class Explorer implements VacuumExplorationUtils {
 		Point current = map.getCurrentPositionPoint();
 		List<PointExp> adj = new LinkedList<PointExp>();
 
+		if (containedInClosedList(current))
+			closedList.remove(current);
 
 		for (Point p : this.map.getAdjWalkablePoints(current)) {
 			if (!this.map.isVisited(p)) {
@@ -137,7 +139,7 @@ public class Explorer implements VacuumExplorationUtils {
 
 		
 		Movement m = this.chooseRouteNextMovement(go); //TODO change name
-		closedList.remove(go);
+		
 		openList.add(go);
 		
 		return m;

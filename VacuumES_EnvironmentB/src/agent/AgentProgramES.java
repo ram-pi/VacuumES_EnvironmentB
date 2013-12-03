@@ -66,13 +66,7 @@ public class AgentProgramES implements AgentProgram {
 
 		final LocalVacuumEnvironmentPerceptTaskEnvironmentB vep = (LocalVacuumEnvironmentPerceptTaskEnvironmentB) percept;
 
-		if (vep.getState().getLocState() == LocationState.Dirty && !baseFound) {
-//			lastMovement = null;
-//			return suck;
-		} else if (vep.getState().getLocState() == LocationState.Dirty && baseFound) {
-			// Count if the energy is enough to reach the base
-		}
-		
+
 		if (this.step == 0) {
 			this.map.setInitialTile(vep);
 			explorer.init(map.getCurrentPositionPoint());
@@ -80,6 +74,12 @@ public class AgentProgramES implements AgentProgram {
 		}
 		else {
 			this.map.updateMap(vep, this.lastMovement);
+		}
+		if (vep.getState().getLocState() == LocationState.Dirty && !baseFound) {
+			lastMovement = null;
+			return suck;
+		} else if (vep.getState().getLocState() == LocationState.Dirty && baseFound) {
+			// Count if the energy is enough to reach the base
 		}
 		
 		if (vep.isOnBase() && baseFound) {
@@ -93,7 +93,7 @@ public class AgentProgramES implements AgentProgram {
 		if (moveTo == null) {
 			return NoOpAction.NO_OP;
 		}
-		this.lastMovement = explorer.nextAction();
+		this.lastMovement = moveTo;
 		
 		if (lastMovement == null) {
 			System.out.println("null movement..");
