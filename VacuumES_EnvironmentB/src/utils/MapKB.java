@@ -155,7 +155,7 @@ public class MapKB implements VacuumMapsUtils {
 	public void updateMap (LocalVacuumEnvironmentPerceptTaskEnvironmentB vep, Movement lastAction) {
 
 		/* we don't move in the last step */
-		if (lastAction == null)
+		if (lastAction == Movement.nomove)
 			return;
 		
 		int lastX = this.currentPosition.getPoint().x;
@@ -175,6 +175,8 @@ public class MapKB implements VacuumMapsUtils {
 				break;
 			case up:
 				p = new Point(lastX, lastY+1);
+				break;
+			case nomove:
 				break;
 			default:
 				//TODO some err

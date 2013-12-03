@@ -7,7 +7,7 @@ import core.LocalVacuumEnvironmentPerceptTaskEnvironmentB;
 public interface VacuumMapsUtils {
 
 	public enum Movement {
-		left, down, right, up;
+		left, down, right, up, nomove;
 	}
 
 	

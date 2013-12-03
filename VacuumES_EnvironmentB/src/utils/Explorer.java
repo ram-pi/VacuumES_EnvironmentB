@@ -89,15 +89,17 @@ public class Explorer implements VacuumExplorationUtils {
 				PointExp pe = new PointExp(p);
 				pe.from = findPointInOpenList(current);
 				pe.d = this.map.eucladianDistance(start, pe);
-				if (!closedList.contains(pe))
+				if (!containedInClosedList(p))
 					closedList.add(pe);
 				adj.add(pe);
-			}
+			} 
 		}
 
 		PointExp go = new PointExp();
 		/* we have to come back, no more tail to explore here */
 		if (adj.size() == 0) {
+			System.out.println("No ADJ!");
+			
 			int min = Integer.MAX_VALUE;
 			for (PointExp p: closedList) {
 				int d = map.manatthanDistance(current, p);
@@ -109,9 +111,6 @@ public class Explorer implements VacuumExplorationUtils {
 		}
 		else {
 
-			if (closedList.size() == 0) {
-				//TODO we explore all the map?
-			}
 
 			double min = Integer.MAX_VALUE;
 			for (PointExp p: adj) {
@@ -156,7 +155,7 @@ public class Explorer implements VacuumExplorationUtils {
 			PointExp go = findPointInOpenList(map.getCurrentPositionPoint());
 			
 			if (path.size() == 0) {
-				findPathToPoint(dest);
+				findPathToPoint(findPointInClosedList(dest).from);
 			}
 			return chooseRouteNextMovement(new PointExp(path.remove(0)));
 		}
@@ -166,6 +165,16 @@ public class Explorer implements VacuumExplorationUtils {
 	private void findPathToPoint(Point dest) {
 		Astar a = new Astar(map);
 		path = a.astar(map.getCurrentPositionPoint(), dest).getPointPath();
+	}
+	
+	private boolean containedInClosedList (Point p) {
+		
+		for (PointExp pe : closedList) {
+			if (pe.x == p.x && pe.y == p.y) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }
