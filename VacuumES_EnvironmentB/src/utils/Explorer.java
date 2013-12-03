@@ -77,6 +77,15 @@ public class Explorer implements VacuumExplorationUtils {
 		}
 		return null;
 	}
+	
+	private void printClosedList() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Closed list:\n");
+		for (Point p : closedList) {
+			sb.append("[" + p.x + "," + p.y + "]\n");
+		}
+		System.out.println(sb.toString());
+	}
 
 	@Override
 	public Movement nextAction() {
@@ -85,6 +94,10 @@ public class Explorer implements VacuumExplorationUtils {
 
 		if (containedInClosedList(current))
 			closedList.remove(current);
+		
+		for (PointExp p: new LinkedList<PointExp>(closedList))
+			if (map.isObstacle(p)) 
+				closedList.remove(p);
 
 		for (Point p : this.map.getAdjWalkablePoints(current)) {
 			if (!this.map.isVisited(p)) {
@@ -101,15 +114,20 @@ public class Explorer implements VacuumExplorationUtils {
 		/* we have to come back, no more tail to explore here */
 		if (adj.size() == 0) {
 			System.out.println("No ADJ!");
+			printClosedList();
 			
-			if (closedList.size() == 0) {
-				System.out.println("We explored all maps??");
-				return null;
-			}
+
 			int min = Integer.MAX_VALUE;
 
 
-			for (PointExp p: new LinkedList<PointExp>(closedList)) {
+
+			if (closedList.size() == 0) {
+				System.out.println("We explored all maps??");
+				return null;
+			}		
+				
+
+			for (PointExp p: closedList) {
 				
 				if (map.isObstacle(p)) {
 					closedList.remove(p);
