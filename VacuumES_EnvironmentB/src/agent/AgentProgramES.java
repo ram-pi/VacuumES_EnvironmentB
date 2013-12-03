@@ -54,8 +54,6 @@ public class AgentProgramES implements AgentProgram {
 		this.step = 0;
 		this.map = new MapKB(this);
 		this.explorer = new Explorer(this);
-		
-	
 	}
 
 	public VacuumMapsUtils getMap() {
