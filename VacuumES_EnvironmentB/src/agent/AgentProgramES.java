@@ -1,5 +1,6 @@
 package agent;
 
+import java.io.NotActiveException;
 import java.util.Random;
 import java.util.Set;
 
@@ -88,7 +89,10 @@ public class AgentProgramES implements AgentProgram {
 		this.step++;
 		
 		
-
+		Movement moveTo =  explorer.nextAction();
+		if (moveTo == null) {
+			return NoOpAction.NO_OP;
+		}
 		this.lastMovement = explorer.nextAction();
 		
 		if (lastMovement == null) {

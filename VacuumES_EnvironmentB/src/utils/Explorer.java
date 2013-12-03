@@ -100,9 +100,13 @@ public class Explorer implements VacuumExplorationUtils {
 		if (adj.size() == 0) {
 			System.out.println("No ADJ!");
 			
+			if (closedList.size() == 0) {
+				System.out.println("We explored all maps??");
+				return null;
+			}
 			int min = Integer.MAX_VALUE;
 
-			
+
 			for (PointExp p: new LinkedList<PointExp>(closedList)) {
 				
 				if (map.isObstacle(p)) {
