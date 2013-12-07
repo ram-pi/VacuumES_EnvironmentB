@@ -10,6 +10,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import map.MapInterface;
+
 public class Astar {
 
 	private class A_Point {
@@ -83,9 +85,9 @@ public class Astar {
 	private List<A_Point> openList;
 	private A_Point current;
 	private List<A_Point> path;
-	private VacuumMapsUtils map;
+	private MapInterface map;
 
-	public Astar(VacuumMapsUtils map) {
+	public Astar(MapInterface map) {
 		this.closedList = new LinkedList<A_Point>();
 		this.openList = new LinkedList<A_Point>();
 		this.current = new A_Point();

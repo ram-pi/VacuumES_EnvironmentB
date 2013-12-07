@@ -1,4 +1,4 @@
-package utils;
+package map;
 
 
 
@@ -20,7 +20,9 @@ import java.util.Map;
 
 
 
-public class MapKB implements VacuumMapsUtils {
+
+
+public class MapImpl implements MapInterface {
 
 
 	private Map<Point, Tile> map;
@@ -36,7 +38,7 @@ public class MapKB implements VacuumMapsUtils {
 	private boolean rowsWallsDetected;
 	private boolean colsWallsDetected;
 
-	public MapKB(AgentProgram a) {
+	public MapImpl(AgentProgram a) {
 		this.agent = a;
 		this.map = new HashMap<Point, Tile>();
 		this.base = null;

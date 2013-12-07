@@ -4,13 +4,14 @@ import java.io.NotActiveException;
 import java.util.Random;
 import java.util.Set;
 
-import utils.Explorer;
+import map.MapImpl;
+import map.MapInterface;
+import map.MapInterface.Movement;
+
 import utils.Logger;
-import utils.MapKB;
-import utils.VacuumMapsUtils;
-import utils.VacuumMapsUtils.Movement;
 import core.LocalVacuumEnvironmentPerceptTaskEnvironmentB;
 import core.VacuumEnvironment.LocationState;
+import explorer.ExplorerMushroomHunter;
 import aima.core.agent.Action;
 import aima.core.agent.AgentProgram;
 import aima.core.agent.Percept;
@@ -20,8 +21,8 @@ public class AgentProgramES implements AgentProgram {
 
 	private int step;
 	public Movement lastMovement;
-	private VacuumMapsUtils map;
-	private Explorer explorer;
+	private MapInterface map;
+	private ExplorerMushroomHunter explorer;
 	private Logger log;
 	private boolean baseFound;
 	
@@ -53,11 +54,11 @@ public class AgentProgramES implements AgentProgram {
 	public AgentProgramES ()
 	{
 		this.step = 0;
-		this.map = new MapKB(this);
-		this.explorer = new Explorer(this);
+		this.map = new MapImpl(this);
+		this.explorer = new ExplorerMushroomHunter(this);
 	}
 
-	public VacuumMapsUtils getMap() {
+	public MapInterface getMap() {
 		return this.map;
 	}
 	

@@ -1,10 +1,11 @@
-package utils;
+package map;
 
 import java.awt.Point;
 import java.util.List;
+
 import core.LocalVacuumEnvironmentPerceptTaskEnvironmentB;
 
-public interface VacuumMapsUtils {
+public interface MapInterface {
 
 	public enum Movement {
 		left, down, right, up, nomove;

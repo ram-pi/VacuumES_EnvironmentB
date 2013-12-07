@@ -1,17 +1,20 @@
-package utils;
+package explorer;
 
 import java.awt.Point;
 import java.util.LinkedList;
 import java.util.List;
 
-import utils.VacuumMapsUtils.Movement;
+import map.MapInterface;
+import map.MapInterface.Movement;
+
+import utils.Astar;
 
 
 import agent.AgentProgramES;
 
 
 
-public class Explorer implements VacuumExplorationUtils {
+public class ExplorerMushroomHunter implements ExplorerInterface {
 
 	private class PointExp extends Point {
 
@@ -38,14 +41,14 @@ public class Explorer implements VacuumExplorationUtils {
 	private List<PointExp> closedList;
 	private List<PointExp> openList;
 	private AgentProgramES agent;
-	private VacuumMapsUtils map;
+	private MapInterface map;
 	private PointExp start;
 	private List<Point> path;
 	
 
 
 
-	public Explorer (AgentProgramES agent) {
+	public ExplorerMushroomHunter (AgentProgramES agent) {
 		this.agent = agent;
 		this.closedList = new LinkedList<PointExp>();
 		this.openList = new LinkedList<PointExp>();
@@ -60,7 +63,7 @@ public class Explorer implements VacuumExplorationUtils {
 		this.openList.add(start);
 	}
 	
-	public PointExp findPointInClosedList(Point p) {
+	private PointExp findPointInClosedList(Point p) {
 		for (PointExp pe: closedList) {
 			if (p.x == pe.x && p.y == pe.y) {
 				return pe;
@@ -69,7 +72,7 @@ public class Explorer implements VacuumExplorationUtils {
 		return null;
 	}
 	
-	public PointExp findPointInOpenList(Point p) {
+	private PointExp findPointInOpenList(Point p) {
 		for (PointExp pe: openList) {
 			if (p.x == pe.x && p.y == pe.y) {
 				return pe;
