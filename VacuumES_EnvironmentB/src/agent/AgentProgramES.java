@@ -1,7 +1,6 @@
 package agent;
 
-import java.io.NotActiveException;
-import java.util.Random;
+
 import java.util.Set;
 
 import map.MapImpl;
@@ -11,6 +10,8 @@ import map.MapInterface.Movement;
 import utils.Logger;
 import core.LocalVacuumEnvironmentPerceptTaskEnvironmentB;
 import core.VacuumEnvironment.LocationState;
+import explorer.ExplorerFindWalls;
+import explorer.ExplorerInterface;
 import explorer.ExplorerMushroomHunter;
 import aima.core.agent.Action;
 import aima.core.agent.AgentProgram;
@@ -22,9 +23,10 @@ public class AgentProgramES implements AgentProgram {
 	private int step;
 	public Movement lastMovement;
 	private MapInterface map;
-	private ExplorerMushroomHunter explorer;
+	private ExplorerInterface explorer;
 	private Logger log;
 	private boolean baseFound;
+	private boolean wallsDetected;
 	
 	
 	private Action suck, left, down, right, up;
@@ -55,7 +57,7 @@ public class AgentProgramES implements AgentProgram {
 	{
 		this.step = 0;
 		this.map = new MapImpl(this);
-		this.explorer = new ExplorerMushroomHunter(this);
+		this.explorer = new ExplorerFindWalls(this);
 	}
 
 	public MapInterface getMap() {
@@ -70,19 +72,26 @@ public class AgentProgramES implements AgentProgram {
 
 		if (this.step == 0) {
 			this.map.setInitialTile(vep);
-			explorer.init(map.getCurrentPositionPoint());
 			init(vep.getActionEnergyCosts().keySet());	
 		}
 		else {
 			this.map.updateMap(vep, this.lastMovement);
 		}
 		if (vep.getState().getLocState() == LocationState.Dirty && !baseFound) {
-			lastMovement = Movement.nomove;
+			lastMovement = null;
 			return suck;
 		} else if (vep.getState().getLocState() == LocationState.Dirty && baseFound) {
 			// Count if the energy is enough to reach the base
 		}
 		
+		if (!wallsDetected) {
+			wallsDetected = map.areWallsDetected();
+			if (wallsDetected) {
+				explorer = new ExplorerMushroomHunter(this);
+				explorer.init(map.getCurrentPositionPoint());
+			}
+				
+		}
 		if (vep.isOnBase() && baseFound) {
 			//todo
 		}

@@ -153,36 +153,20 @@ public class MapImpl implements MapInterface {
 	public Tile getTile(Point p) {
 		return this.map.get(p); 
 	}
+	
+	public boolean areWallsDetected() {
+		return rowsWallsDetected && colsWallsDetected;
+	}
 
 	public void updateMap (LocalVacuumEnvironmentPerceptTaskEnvironmentB vep, Movement lastAction) {
 
 		/* we don't move in the last step */
-		if (lastAction == Movement.nomove)
+		if (lastAction == null)
 			return;
-		
-		int lastX = this.currentPosition.getPoint().x;
-		int lastY = this.currentPosition.getPoint().y;
 
-		Point p = null;
 
-		switch(lastAction) {
-			case left:
-				p = new Point(lastX-1, lastY);
-				break;
-			case down:
-				p = new Point(lastX, lastY-1);
-				break;
-			case right:
-				p = new Point(lastX+1, lastY);
-				break;
-			case up:
-				p = new Point(lastX, lastY+1);
-				break;
-			case nomove:
-				break;
-			default:
-				//TODO some err
-		}
+		Point p = MapUtils.neighbourFromDirection(getCurrentPositionPoint(), lastAction);
+
 
 		/* we hit an obstacle */
 		if (!vep.isMovedLastTime()) {

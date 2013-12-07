@@ -8,11 +8,13 @@ import core.LocalVacuumEnvironmentPerceptTaskEnvironmentB;
 public interface MapInterface {
 
 	public enum Movement {
-		left, down, right, up, nomove;
+		left, down, right, up;
 	}
+	
+	
 
 	
-	
+	public boolean areWallsDetected();
 	public List<Point> getAdjWalkablePoints(Point from);
 	public Tile getCurrentPosition();
 	public Point getCurrentPositionPoint();

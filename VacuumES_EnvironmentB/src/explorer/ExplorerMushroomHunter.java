@@ -166,7 +166,7 @@ public class ExplorerMushroomHunter implements ExplorerInterface {
 		return m;
 	}
 
-	/* TODO this is only a stub */
+	/* TODO this is only a stub */	
 	public Movement chooseRouteNextMovement(PointExp dest) {
 		if (dest == null) {
 			//TODO error 
