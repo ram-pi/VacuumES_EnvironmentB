@@ -21,6 +21,11 @@ public class PointFrom extends Point {
 		this.from = from;
 	}
 	
+	public PointFrom(PointFrom p) {
+		super(p);
+		this.from = p.from;
+	}
+	
 	@Override
 	public boolean equals(Object p) {
 		if (p instanceof Point) {

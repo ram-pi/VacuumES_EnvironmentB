@@ -93,7 +93,7 @@ public class ExplorerMushroomHunter implements ExplorerInterface {
 	}
 
 	/* TODO this is only a stub */	
-	public Movement chooseRouteNextMovement(PointFrom dest) {
+	private Movement chooseRouteNextMovement(PointFrom dest) {
 		if (dest == null) {
 			//TODO error 
 			return null;
@@ -113,8 +113,6 @@ public class ExplorerMushroomHunter implements ExplorerInterface {
 			return Movement.left;
 		}
 		else {
-			
-			
 			if (path.size() == 0) {
 				findPathToPoint(dest.getFrom());
 			}

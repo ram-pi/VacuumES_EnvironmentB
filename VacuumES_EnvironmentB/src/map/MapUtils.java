@@ -1,6 +1,8 @@
 package map;
 
 import java.awt.Point;
+import java.util.ArrayList;
+import java.util.List;
 
 import map.MapInterface.Movement;
 
@@ -54,5 +56,18 @@ public class MapUtils {
 		if (n >= Movement.values().length)
 			n = 0;
 		return Movement.values()[n];
+	}
+	
+	public static List<Point> getTrasversalPoint (Point from, Movement dir) {
+		ArrayList<Point> ret = new ArrayList<Point>();
+		if (dir == Movement.left || dir == Movement.right) {
+			ret.add(neighbourFromDirection(from, Movement.up));
+			ret.add(neighbourFromDirection(from, Movement.down));
+		}
+		else if (dir == Movement.up || dir == Movement.down) {
+			ret.add(neighbourFromDirection(from, Movement.left));
+			ret.add(neighbourFromDirection(from, Movement.right));
+		}
+		return ret;
 	}
 }
