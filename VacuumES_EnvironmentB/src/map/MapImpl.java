@@ -24,7 +24,7 @@ import java.util.Map;
 
 public class MapImpl implements MapInterface {
 
-
+	private List<PointFrom> unexploredPoints;
 	private Map<Point, Tile> map;
 	private int cols,rows;
 
@@ -43,7 +43,7 @@ public class MapImpl implements MapInterface {
 		this.map = new HashMap<Point, Tile>();
 		this.base = null;
 		minX = maxX = minY = maxY = 0;
-		
+		unexploredPoints = new LinkedList<PointFrom>();
 	}
 
 	private void updateMinMax(Tile t) {
@@ -67,6 +67,11 @@ public class MapImpl implements MapInterface {
 	
 	private void setTile(Tile t) {
 		updateMinMax(t);
+		
+		if (unexploredPoints.contains(t.getPoint()))
+			unexploredPoints.remove(t.getPoint());
+		
+		/* TODO check, will hashCode of points works? */
 		this.map.put(t.getPoint(), t);
 	}
 	
@@ -164,9 +169,10 @@ public class MapImpl implements MapInterface {
 		if (lastAction == null)
 			return;
 
+		
 
 		Point p = MapUtils.neighbourFromDirection(getCurrentPositionPoint(), lastAction);
-
+		updateUnexploredPointList(p);
 
 		/* we hit an obstacle */
 		if (!vep.isMovedLastTime()) {
@@ -198,10 +204,25 @@ public class MapImpl implements MapInterface {
 			this.currentPosition = t;
 		}
 		
+		
 		System.out.println(getCurrentPosition().getPoint());
 		
 		if (!colsWallsDetected || !rowsWallsDetected)
 			checkWalls();
+	}
+
+	private void updateUnexploredPointList(Point explored) {
+		/* we remove explored points from unexploredPoints list in setTile method */
+		
+		/* no new points to add in unexplored points list */
+		if (isObstacle(explored))
+			return;
+		
+		for (Point p : getAdjWalkablePoints(getCurrentPositionPoint())) {
+			if (!unexploredPoints.contains(p) && !isVisited(p)) 
+				unexploredPoints.add(new PointFrom(p,getCurrentPositionPoint()));
+		}
+		
 	}
 
 	/* return null if base not found yet */
@@ -275,6 +296,11 @@ public class MapImpl implements MapInterface {
 	public double eucladianDistance(Point from, Point to) {
 		
 		return Math.sqrt(Math.pow(to.x-from.x,2)+Math.pow(to.y-from.y, 2));
+	}
+
+	@Override
+	public List<PointFrom> getUnexploredPoints() {
+		return unexploredPoints;
 	}
 
 }

@@ -87,6 +87,7 @@ public class AgentProgramES implements AgentProgram {
 		if (!wallsDetected) {
 			wallsDetected = map.areWallsDetected();
 			if (wallsDetected) {
+				System.out.println("Wall detected");
 				explorer = new ExplorerMushroomHunter(this);
 				explorer.init(map.getCurrentPositionPoint());
 			}

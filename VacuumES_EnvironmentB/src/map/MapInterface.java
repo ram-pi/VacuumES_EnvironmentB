@@ -13,7 +13,7 @@ public interface MapInterface {
 	
 	
 
-	
+	public List<PointFrom> getUnexploredPoints();
 	public boolean areWallsDetected();
 	public List<Point> getAdjWalkablePoints(Point from);
 	public Tile getCurrentPosition();
