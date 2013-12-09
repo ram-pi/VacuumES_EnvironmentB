@@ -28,7 +28,7 @@ public class ExplorerFindWalls implements ExplorerInterface{
 		agent = a;
 		map = a.getMap();
 		/* TODO add seed */
-		random = new Random(); 
+		random = new Random(1); 
 		currentDirection = Movement.values()[random.nextInt(Movement.values().length)];
 		path = new LinkedList<Point>();
 		triesInSameDirection = 0;

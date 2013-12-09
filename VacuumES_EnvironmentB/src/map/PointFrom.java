@@ -3,6 +3,7 @@ package map;
 import java.awt.Point;
 
 public class PointFrom extends Point {
+	/* TODO List of from and then choose the best??? */
 	private Point from;
 	public Point getFrom() {
 		return from;

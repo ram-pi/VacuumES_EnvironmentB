@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import map.MapInterface;
+import map.MapUtils;
 import map.MapInterface.Movement;
 import map.PointFrom;
 
@@ -44,6 +45,9 @@ public class ExplorerMushroomHunter implements ExplorerInterface {
 		Point current = map.getCurrentPositionPoint();
 		List<Point> adj = new LinkedList<Point>();
 		List<PointFrom> unexploredPoints = map.getUnexploredPoints();
+		
+		if (path != null && path.size() > 0) 
+			return MapUtils.movementFromTwoPoints(current, path.remove(0));
 
 		for (Point p : this.map.getAdjWalkablePoints(current)) {
 			if (!this.map.isVisited(p)) {
