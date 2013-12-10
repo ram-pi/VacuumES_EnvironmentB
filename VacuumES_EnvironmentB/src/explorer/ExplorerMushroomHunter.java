@@ -118,7 +118,7 @@ public class ExplorerMushroomHunter implements ExplorerInterface {
 		}
 		else {
 			if (path.size() == 0) {
-				findPathToPoint(dest.getFrom());
+				findPathToPoint(dest);
 			}
 			return chooseRouteNextMovement(new PointFrom(path.remove(0)));
 		}

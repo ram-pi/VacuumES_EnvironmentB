@@ -103,6 +103,7 @@ public class Astar {
 	}
 
 	public Astar astar (Point start, Point finish) {
+		System.out.println("path from "+start.x+" "+start.y+"  to "+finish.x + " " + finish.y);
 		boolean finishPointReached = false;
 		List<A_Point> walkableFromCurrent = new LinkedList<A_Point>();
 
@@ -114,7 +115,7 @@ public class Astar {
 		current.setFather(start);
 
 		closedList.add(current);
-		walkableFromCurrent = getAdjForOpenList(getAdjacent(current.getPosition()), current, finish);
+		walkableFromCurrent = getAdjForOpenList(getAdjacent(current.getPosition(), finish), current, finish);
 		openList.addAll(walkableFromCurrent);
 
 		while (!finishPointReached) {
@@ -141,7 +142,7 @@ public class Astar {
 
 
 			// Find the adjacent tiles to current position
-			walkableFromCurrent = getAdjForOpenList(getAdjacent(current.getPosition()), current, finish);
+			walkableFromCurrent = getAdjForOpenList(getAdjacent(current.getPosition(), finish), current, finish);
 
 			// Foreach Tiles T adjacent to current if T is in the closed list ignore it and if it is not in the openlis add it
 			for (A_Point ap : walkableFromCurrent) {
@@ -258,11 +259,13 @@ public class Astar {
 		return adjOpen;
 	}
 
-	public List<Point> getAdjacent (Point p) {
+	public List<Point> getAdjacent (Point p, Point dest) {
 		List<Point> adj = map.getAdjWalkablePoints(p);
 		List<Point> result = new LinkedList<Point>();
+	
 		for (Point point : adj) {
-			if (map.isVisited(point))
+
+			if (map.isVisited(point) || point.equals(dest))
 				result.add(point);
 		}
 		

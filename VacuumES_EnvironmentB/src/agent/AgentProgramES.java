@@ -126,6 +126,10 @@ public class AgentProgramES implements AgentProgram {
 		
 		/* baseFound = true */
 		if (!checkForEnergy(vep)) {
+			
+			if (vep.isOnBase())
+				return NoOpAction.NO_OP;
+			
 			explorer = new ExplorerFollowPath(this);
 			explorer.init(map.getBase().getPoint());
 			lastMovement = explorer.nextAction();
@@ -139,10 +143,15 @@ public class AgentProgramES implements AgentProgram {
 		
 		if (!mapExplored && lastMovement == null) {
 			mapExplored = true;
+			comeBackHome = true;
+			
+			if (vep.isOnBase())
+				return NoOpAction.NO_OP;
+			
 			explorer = new ExplorerFollowPath(this);
 			explorer.init(map.getBase().getPoint());
 			lastMovement = explorer.nextAction();
-			comeBackHome = true;
+			
 			return actionFromMovement(lastMovement);
 		}
 		
