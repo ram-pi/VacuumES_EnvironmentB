@@ -113,6 +113,12 @@ public class MapImpl implements MapInterface {
 		
 		if (vep.isOnBase())
 			this.setBase(t);
+		
+		for (Point p: getAdjWalkablePoints(getCurrentPositionPoint())) {
+			PointFrom pf = new PointFrom(p, t.getPoint());
+			unexploredPoints.add(pf);
+		}
+
 
 	}
 
@@ -296,6 +302,10 @@ public class MapImpl implements MapInterface {
 	public double eucladianDistance(Point from, Point to) {
 		
 		return Math.sqrt(Math.pow(to.x-from.x,2)+Math.pow(to.y-from.y, 2));
+	}
+	
+	public boolean isCompletelyExplored() {
+		return unexploredPoints.size() == 0;
 	}
 
 	@Override
