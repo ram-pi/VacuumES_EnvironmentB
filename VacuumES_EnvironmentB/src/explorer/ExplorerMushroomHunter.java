@@ -195,7 +195,7 @@ public class ExplorerMushroomHunter implements ExplorerInterface {
 		Point p;
 		for (int i = start.x - d; i <= start.x + d; i++) {
 			p = new Point(i, start.y+d);
-			if (!map.isVisited(p) && !currentFront.contains(p));
+			if (!map.isVisited(p) && !currentFront.contains(p))
 				currentFront.add(p);
 			p = new Point(i, start.y-d);
 			if (!map.isVisited(p) && !currentFront.contains(p))
@@ -206,7 +206,7 @@ public class ExplorerMushroomHunter implements ExplorerInterface {
 			p = new Point(start.x+d, i);
 			if (!map.isVisited(p) && !currentFront.contains(p))
 				currentFront.add(p);
-			p = new Point(start.y-d, i);
+			p = new Point(start.x-d, i);
 			if (!map.isVisited(p) && !currentFront.contains(p))
 				currentFront.add(p);
 		}
