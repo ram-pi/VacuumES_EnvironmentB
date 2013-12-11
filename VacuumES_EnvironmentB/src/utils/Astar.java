@@ -77,6 +77,12 @@ public class Astar {
 				return true;
 			return false;
 		}
+		
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append("["+position.x+","+position.y+"] g:"+g+" f:"+getF()+" fath:["+father.x+","+father.y+"]");
+			return sb.toString();
+		}
 
 	}
 
@@ -88,8 +94,27 @@ public class Astar {
 	private MapInterface map;
 
 	public Astar(MapInterface map) {
-		this.closedList = new LinkedList<A_Point>();
-		this.openList = new LinkedList<A_Point>();
+		this.closedList = new LinkedList<A_Point>()
+				{
+					public String toString() {
+						StringBuilder sb = new StringBuilder(); 
+						for (A_Point ap : this) {
+							sb.append(ap);
+							sb.append("\n");
+						}
+						return sb.toString();
+					}
+				};
+		this.openList = new LinkedList<A_Point>()				{
+			public String toString() {
+				StringBuilder sb = new StringBuilder(); 
+				for (A_Point ap : this) {
+					sb.append(ap);
+					sb.append("\n");
+				}
+				return sb.toString();
+			}
+		};
 		this.current = new A_Point();
 		this.path = new ArrayList<A_Point>(); 	
 		this.map = map;
@@ -118,8 +143,16 @@ public class Astar {
 		walkableFromCurrent = getAdjForOpenList(getAdjacent(current.getPosition(), finish), current, finish);
 		openList.addAll(walkableFromCurrent);
 
+		int step = 0;
+		boolean debug = false;
 		while (!finishPointReached) {
 
+			step++;
+			if (debug){
+				
+			System.out.println(closedList);
+			System.out.println(openList);
+			}
 			// Verify if I reached the destination
 			if (current.getPosition().equals(finish)) {
 				finishPointReached = true;
@@ -245,7 +278,7 @@ public class Astar {
 
 	public List<A_Point> getAdjForOpenList (List<Point> adj, A_Point father, Point destination) {
 		List<A_Point> adjOpen = new LinkedList<A_Point>();
-		double g = father.getG()+0.5;
+		double g = father.getG()+1;
 		double h;
 		Point f = father.getPosition();
 		A_Point tmp;
