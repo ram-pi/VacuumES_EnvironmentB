@@ -226,7 +226,7 @@ public class MapImpl implements MapInterface {
 		
 		for (Point p : getAdjWalkablePoints(explored)) {
 			if (!unexploredPoints.contains(p) && !isVisited(p)) 
-				unexploredPoints.add(new PointFrom(p,getCurrentPositionPoint()));
+				unexploredPoints.add(new PointFrom(p,explored));
 		}
 		
 	}
