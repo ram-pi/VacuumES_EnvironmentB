@@ -1,6 +1,7 @@
 package explorer;
 
 import java.awt.Point;
+import java.rmi.UnexpectedException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -95,28 +96,19 @@ public class ExplorerMushroomHunter implements ExplorerInterface {
 
 	private void checkReachability() {
 		LinkedList<Point> urc = new LinkedList<Point>();
+		List<PointFrom> unexploredPoints = map.getUnexploredPoints();
+		
 		urc.addAll(unreacheables);
 		Astar astar = new Astar(map);
-		List<Point> pathToN = null;
-		List<Point> ret =  null;
-		int min = Integer.MAX_VALUE;
-		
+
 		for (Point p : urc) {
-			if (map.isVisited(p)) {
+			if (unexploredPoints.contains(p)) {
+				astar.astar(map.getCurrentPositionPoint(), p);
 				unreacheables.remove(p);
-				continue;
-			}
-			
-			astar.astar(map.getCurrentPositionPoint(), p);
-			pathToN = astar.getPointPath();
-			
-			if (pathToN.size() < min && pathToN.size() > 0) { 
-				min = pathToN.size();
-				ret = new LinkedList<Point>();
-				ret.addAll(pathToN);
+				path =  astar.getPointPath();
 			}
 		}
-		path = ret;
+
 		return;
 	}
 
