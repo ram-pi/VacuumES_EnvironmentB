@@ -178,7 +178,6 @@ public class MapImpl implements MapInterface {
 		
 
 		Point p = MapUtils.neighbourFromDirection(getCurrentPositionPoint(), lastAction);
-		updateUnexploredPointList(p);
 
 		/* we hit an obstacle */
 		if (!vep.isMovedLastTime()) {
@@ -208,6 +207,8 @@ public class MapImpl implements MapInterface {
 				setBase(t);
 
 			this.currentPosition = t;
+			updateUnexploredPointList();
+
 		}
 		
 		
@@ -217,11 +218,11 @@ public class MapImpl implements MapInterface {
 			checkWalls();
 	}
 
-	private void updateUnexploredPointList(Point explored) {
+	private void updateUnexploredPointList() {
 		/* we remove explored points from unexploredPoints list in setTile method */
 		
 		/* no new points to add in unexplored points list */
-		if (isObstacle(explored))
+		if (isObstacle(getCurrentPositionPoint()))
 			return;
 		
 		for (Point p : getAdjWalkablePoints(getCurrentPositionPoint())) {
