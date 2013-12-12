@@ -1,6 +1,7 @@
 package explorer;
 
 import java.awt.Point;
+import java.rmi.UnexpectedException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -95,28 +96,19 @@ public class ExplorerMushroomHunter implements ExplorerInterface {
 
 	private void checkReachability() {
 		LinkedList<Point> urc = new LinkedList<Point>();
+		List<PointFrom> unexploredPoints = map.getUnexploredPoints();
+		
 		urc.addAll(unreacheables);
 		Astar astar = new Astar(map);
-		List<Point> pathToN = null;
-		List<Point> ret =  null;
-		int min = Integer.MAX_VALUE;
-		
+
 		for (Point p : urc) {
-			if (map.isVisited(p)) {
+			if (unexploredPoints.contains(p)) {
+				astar.astar(map.getCurrentPositionPoint(), p);
 				unreacheables.remove(p);
-				continue;
-			}
-			
-			astar.astar(map.getCurrentPositionPoint(), p);
-			pathToN = astar.getPointPath();
-			
-			if (pathToN.size() < min && pathToN.size() > 0) { 
-				min = pathToN.size();
-				ret = new LinkedList<Point>();
-				ret.addAll(pathToN);
+				path =  astar.getPointPath();
 			}
 		}
-		path = ret;
+
 		return;
 	}
 
@@ -195,7 +187,7 @@ public class ExplorerMushroomHunter implements ExplorerInterface {
 		Point p;
 		for (int i = start.x - d; i <= start.x + d; i++) {
 			p = new Point(i, start.y+d);
-			if (!map.isVisited(p) && !currentFront.contains(p))
+			if (!map.isVisited(p) && !currentFront.contains(p));
 				currentFront.add(p);
 			p = new Point(i, start.y-d);
 			if (!map.isVisited(p) && !currentFront.contains(p))
@@ -206,7 +198,7 @@ public class ExplorerMushroomHunter implements ExplorerInterface {
 			p = new Point(start.x+d, i);
 			if (!map.isVisited(p) && !currentFront.contains(p))
 				currentFront.add(p);
-			p = new Point(start.x-d, i);
+			p = new Point(start.y-d, i);
 			if (!map.isVisited(p) && !currentFront.contains(p))
 				currentFront.add(p);
 		}
