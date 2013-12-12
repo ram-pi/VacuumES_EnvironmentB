@@ -241,9 +241,9 @@ public class MapImpl implements MapInterface {
 		if (isObstacle(getCurrentPositionPoint()))
 			return;
 		
-		for (Point p : getAdjWalkablePoints(explored)) {
+		for (Point p : getAdjWalkablePoints(getCurrentPositionPoint())) {
 			if (!unexploredPoints.contains(p) && !isVisited(p)) 
-				unexploredPoints.add(new PointFrom(p,explored));
+				unexploredPoints.add(new PointFrom(p,getCurrentPositionPoint()));
 		}
 		
 	}
