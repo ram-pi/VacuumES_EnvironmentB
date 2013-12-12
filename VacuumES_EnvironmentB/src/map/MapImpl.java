@@ -107,6 +107,7 @@ public class MapImpl implements MapInterface {
 		
 		rows = vep.getN();
 		cols = vep.getM();
+		System.out.println(cols + " " + rows);
 
 		this.setTile(t);
 		currentPosition = t;

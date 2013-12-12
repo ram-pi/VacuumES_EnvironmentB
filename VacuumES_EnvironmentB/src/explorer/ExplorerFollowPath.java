@@ -4,9 +4,7 @@ import java.awt.Point;
 import java.util.List;
 
 import utils.Astar;
-
 import agent.AgentProgramES;
-
 import map.MapInterface;
 import map.MapInterface.Movement;
 import map.MapUtils;

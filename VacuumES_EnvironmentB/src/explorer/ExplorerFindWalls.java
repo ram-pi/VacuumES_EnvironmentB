@@ -7,9 +7,7 @@ import java.util.List;
 import java.util.Random;
 
 import utils.Astar;
-
 import agent.AgentProgramES;
-
 import map.MapInterface;
 import map.MapUtils;
 import map.MapInterface.Movement;
@@ -38,7 +36,7 @@ public class ExplorerFindWalls implements ExplorerInterface{
 	public void init(Point p) {
 		return;	
 	}
-
+	
 	@Override
 	public Movement nextAction() {
 		/* we're following a path */

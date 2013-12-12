@@ -37,13 +37,13 @@ public class ExplorerMushroomHunter implements ExplorerInterface {
 		unreacheables = new LinkedList<Point>();
 	}
 
-
 	@Override
 	public void init(Point p) {
 		this.start = new Point(p);
+		currentFront.clear();
+		currentFrontDistance = 0;
 		currentFront.add(p);
 	}
-	
 
 	@Override
 	public Movement nextAction() {

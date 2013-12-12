@@ -82,8 +82,8 @@ public class AgentProgramES implements AgentProgram {
 	
 	private Action chooseAction(LocalVacuumEnvironmentPerceptTaskEnvironmentB vep) {
 
-		System.out.println("CurrEnergy: " + vep.getCurrentEnergy());
-		if (vep.getCurrentEnergy() <= 0)
+		//System.out.println("CurrEnergy: " + vep.getCurrentEnergy());
+		if (vep.getCurrentEnergy() <= 0 || (map.isCompletelyExplored() && !baseFound))
 			return NoOpAction.NO_OP;
 		
 		if (comeBackHome && vep.isOnBase())
@@ -97,7 +97,7 @@ public class AgentProgramES implements AgentProgram {
 		if ( !baseFound && vep.isOnBase()) {
 			System.out.println("BASE FOUND");
 			baseFound = true;
-			/* if xplorer != mushroomhunter */
+			/* if explorer != mushroomhunter */
 			/* explorer = new ExplorerMushroomHunter(this); */
 			explorer.init(map.getCurrentPositionPoint());
 		}
@@ -165,7 +165,7 @@ public class AgentProgramES implements AgentProgram {
 		astar.astar(map.getCurrentPositionPoint(), map.getBase().getPoint());
 		
 		List<Point> path = astar.getPointPath();
-		System.out.println("energy to return to base now: " + path.size());
+		//System.out.println("energy to return to base now: " + path.size());
 		/* have we enough energy to move, suck, remove and come back? */
 		/* TODO get energy action cost from vep */
 		if (path.size() > vep.getCurrentEnergy() - 3)
