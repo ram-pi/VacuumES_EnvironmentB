@@ -30,7 +30,7 @@ public class PointFrom extends Point {
 	@Override
 	public boolean equals(Object p) {
 		if (p instanceof Point) {
-			return p.equals((Point)this);
+			return super.equals((Point)p);
 		}
 		PointFrom pf;
 		if (p instanceof PointFrom) {

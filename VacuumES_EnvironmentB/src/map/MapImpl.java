@@ -42,8 +42,10 @@ public class MapImpl implements MapInterface {
 		this.agent = a;
 		this.map = new HashMap<Point, Tile>();
 		this.base = null;
-		minX = maxX = minY = maxY = 0;
+		minX = minY = 0;
+		maxX = maxY = 0;
 		unexploredPoints = new LinkedList<PointFrom>();
+		rowsWallsDetected = colsWallsDetected = false;
 	}
 
 	private void updateMinMax(Tile t) {
@@ -68,8 +70,6 @@ public class MapImpl implements MapInterface {
 	private void setTile(Tile t) {
 		updateMinMax(t);
 		
-		if (unexploredPoints.contains(t.getPoint()))
-			unexploredPoints.remove(t.getPoint());
 		
 		/* TODO check, will hashCode of points works? */
 		this.map.put(t.getPoint(), t);
@@ -77,27 +77,13 @@ public class MapImpl implements MapInterface {
 	
 	/* Can we known where are the walls ? */
 	private void checkWalls() {
-		Tile t;
-		if (maxX - minX == cols-1 && !rowsWallsDetected) {
-			rowsWallsDetected = true;
-			for (int i = 0 - rows; i < rows; i++) {
-				t = new Tile(new Point(minX-1, i), true, true, false, false);
-				setTile(t);
-				t = new Tile(new Point(maxX+1, i), true, true, false, false);
-				setTile(t);
-			}
-		}
 		
-		if (maxY - minY == rows-1 && !colsWallsDetected) {
+		if (maxX - minX == cols-1 && !rowsWallsDetected) 
+			rowsWallsDetected = true;
+
+	
+		if (maxY - minY == rows-1 && !colsWallsDetected) 
 			colsWallsDetected = true;
-			
-			for (int i = 0 - cols; i < cols; i++) {
-				t = new Tile(new Point(i, minY-1), true, true, false, false);
-				setTile(t);
-				t = new Tile(new Point(i, maxY+1), true, true, false, false);
-				setTile(t);
-			}
-		}
 
 	}
 
@@ -132,6 +118,9 @@ public class MapImpl implements MapInterface {
 
 	
 	public boolean isVisited(Point p) {
+		if (isWall(p))
+			return true;
+		
 		return this.map.containsKey(p);
 	}
 
@@ -142,7 +131,20 @@ public class MapImpl implements MapInterface {
 
 	//TODO check if is visited e
 	public boolean isWall(Point p) {
-		return this.map.get(p).isWall();
+		if (p.x < -cols + 1 + maxX)
+			return true;
+		if (p.x > cols + minX -1)
+			return true;
+		
+		if (p.y > rows + minY -1)
+			return true;
+		if (p.y < -rows + 1 + maxY)
+			return true;
+		
+		if (map.containsKey(p))
+			return this.map.get(p).isWall();
+		
+		return false;
 	}
 
 	public boolean isWall(Tile t) {
@@ -154,6 +156,9 @@ public class MapImpl implements MapInterface {
 	}
 	
 	public boolean isObstacle(Point p) {
+		if (isWall(p))
+			return true;
+		
 		if (this.getTile(p) != null)
 			return this.map.get(p).isObstacle();
 		
@@ -220,6 +225,12 @@ public class MapImpl implements MapInterface {
 
 	private void updateUnexploredPointList() {
 		/* we remove explored points from unexploredPoints list in setTile method */
+		LinkedList<Point> uec = new LinkedList<Point>();
+		uec.addAll(unexploredPoints);
+		
+		for (Point p : uec) 
+			if (isVisited(p))
+				unexploredPoints.remove(p);
 		
 		/* no new points to add in unexplored points list */
 		if (isObstacle(getCurrentPositionPoint()))
