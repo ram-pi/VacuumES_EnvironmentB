@@ -128,7 +128,7 @@ public class Astar {
 	}
 
 	public Astar astar (Point start, Point finish) {
-		System.out.println("path from "+start.x+" "+start.y+"  to "+finish.x + " " + finish.y);
+	
 		boolean finishPointReached = false;
 		List<A_Point> walkableFromCurrent = new LinkedList<A_Point>();
 
@@ -143,16 +143,9 @@ public class Astar {
 		walkableFromCurrent = getAdjForOpenList(getAdjacent(current.getPosition(), finish), current, finish);
 		openList.addAll(walkableFromCurrent);
 
-		int step = 0;
-		boolean debug = false;
 		while (!finishPointReached) {
 
-			step++;
-			if (debug){
-				
-			System.out.println(closedList);
-			System.out.println(openList);
-			}
+
 			// Verify if I reached the destination
 			if (current.getPosition().equals(finish)) {
 				finishPointReached = true;

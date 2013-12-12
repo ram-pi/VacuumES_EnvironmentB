@@ -131,14 +131,6 @@ public class MapImpl implements MapInterface {
 
 	
 	public boolean isVisited(Point p) {
-		if (rowsWallsDetected)
-			if (p.x < minX || p.x > maxX)
-				return true;
-		
-		if (colsWallsDetected)
-			if (p.y < minY || p.y > maxY)
-				return true;
-		
 		return this.map.containsKey(p);
 	}
 
@@ -161,14 +153,6 @@ public class MapImpl implements MapInterface {
 	}
 	
 	public boolean isObstacle(Point p) {
-		if (rowsWallsDetected)
-			if (p.x < minX || p.x > maxX)
-				return true;
-		
-		if (colsWallsDetected)
-			if (p.y < minY || p.y > maxY)
-				return true;
-		
 		if (this.getTile(p) != null)
 			return this.map.get(p).isObstacle();
 		
@@ -194,6 +178,7 @@ public class MapImpl implements MapInterface {
 		
 
 		Point p = MapUtils.neighbourFromDirection(getCurrentPositionPoint(), lastAction);
+		updateUnexploredPointList(p);
 
 		/* we hit an obstacle */
 		if (!vep.isMovedLastTime()) {
@@ -223,8 +208,6 @@ public class MapImpl implements MapInterface {
 				setBase(t);
 
 			this.currentPosition = t;
-			updateUnexploredPointList();
-
 		}
 		
 		
@@ -234,11 +217,11 @@ public class MapImpl implements MapInterface {
 			checkWalls();
 	}
 
-	private void updateUnexploredPointList() {
+	private void updateUnexploredPointList(Point explored) {
 		/* we remove explored points from unexploredPoints list in setTile method */
 		
 		/* no new points to add in unexplored points list */
-		if (isObstacle(getCurrentPositionPoint()))
+		if (isObstacle(explored))
 			return;
 		
 		for (Point p : getAdjWalkablePoints(getCurrentPositionPoint())) {
