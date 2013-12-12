@@ -7,7 +7,7 @@ import java.util.List;
 import map.MapInterface;
 import map.MapUtils;
 import map.MapInterface.Movement;
-import map.PointFrom;
+
 
 import utils.Astar;
 
@@ -53,7 +53,7 @@ public class ExplorerMushroomHunter implements ExplorerInterface {
 		
 		Point current = map.getCurrentPositionPoint();
 		List<Point> adj = new LinkedList<Point>();
-		List<PointFrom> unexploredPoints = map.getUnexploredPoints();
+		List<Point> unexploredPoints = map.getUnexploredPoints();
 		
 		if (path != null && path.size() > 0) 
 			return MapUtils.movementFromTwoPoints(current, path.remove(0));
@@ -73,7 +73,7 @@ public class ExplorerMushroomHunter implements ExplorerInterface {
 		
 		for (Point p : map.getAdjWalkablePoints(map.getCurrentPositionPoint())) 
 			if (currentFront.contains(p))
-				return chooseRouteNextMovement(new PointFrom(p));
+				return chooseRouteNextMovement(p);
 		
 		
 		
@@ -88,7 +88,7 @@ public class ExplorerMushroomHunter implements ExplorerInterface {
 			
 		
 		
-		Movement m = this.chooseRouteNextMovement(new PointFrom(path.remove(0))); //TODO change name
+		Movement m = this.chooseRouteNextMovement(path.remove(0)); //TODO change name
 						
 		return m;
 	}
@@ -161,7 +161,7 @@ public class ExplorerMushroomHunter implements ExplorerInterface {
 
 
 	/* TODO this is only a stub */	
-	private Movement chooseRouteNextMovement(PointFrom dest) {
+	private Movement chooseRouteNextMovement(Point dest) {
 		if (dest == null) {
 			//TODO error 
 			return null;
@@ -184,7 +184,7 @@ public class ExplorerMushroomHunter implements ExplorerInterface {
 			if (path.size() == 0) {
 				findPathToPoint(dest);
 			}
-			return chooseRouteNextMovement(new PointFrom(path.remove(0)));
+			return chooseRouteNextMovement(path.remove(0));
 		}
 
 	}

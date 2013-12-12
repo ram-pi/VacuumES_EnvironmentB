@@ -11,7 +11,7 @@ import agent.AgentProgramES;
 import map.MapInterface;
 import map.MapUtils;
 import map.MapInterface.Movement;
-import map.PointFrom;
+
 
 public class ExplorerFindWalls implements ExplorerInterface{
 
@@ -74,21 +74,21 @@ public class ExplorerFindWalls implements ExplorerInterface{
 		
 		
 		/* are we in a dead end?? */
-		List<PointFrom> unexplored = map.getUnexploredPoints();
+		List<Point> unexplored = map.getUnexploredPoints();
 		currentDirection = Movement.values()[random.nextInt(Movement.values().length)];
 		
 		int min = Integer.MAX_VALUE;
-		PointFrom go = null;
-		for (PointFrom pointFrom : unexplored) {
-			if (map.manatthanDistance(map.getCurrentPositionPoint(), pointFrom) < min) {
+		Point go = null;
+		for (Point point : unexplored) {
+			if (map.manatthanDistance(map.getCurrentPositionPoint(), point) < min) {
 				/* Should we use real distance calculated by A* */
-				min = map.manatthanDistance(map.getCurrentPositionPoint(), pointFrom);
-				go = new PointFrom(pointFrom);
+				min = map.manatthanDistance(map.getCurrentPositionPoint(), point);
+				go = new Point(point);
 			}
 		}
 		
 		Astar astar = new Astar(map);
-		path = astar.astar(map.getCurrentPositionPoint(), go.getFrom()).getPointPath();
+		path = astar.astar(map.getCurrentPositionPoint(), go).getPointPath();
 		path.add(go);
 		return MapUtils.movementFromTwoPoints(map.getCurrentPositionPoint(), path.remove(0));
 

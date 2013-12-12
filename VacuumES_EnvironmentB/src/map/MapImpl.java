@@ -24,7 +24,7 @@ import java.util.Map;
 
 public class MapImpl implements MapInterface {
 
-	private List<PointFrom> unexploredPoints;
+	private List<Point> unexploredPoints;
 	private Map<Point, Tile> map;
 	private int cols,rows;
 
@@ -44,7 +44,7 @@ public class MapImpl implements MapInterface {
 		this.base = null;
 		minX = minY = 0;
 		maxX = maxY = 0;
-		unexploredPoints = new LinkedList<PointFrom>();
+		unexploredPoints = new LinkedList<Point>();
 		rowsWallsDetected = colsWallsDetected = false;
 	}
 
@@ -101,10 +101,9 @@ public class MapImpl implements MapInterface {
 		if (vep.isOnBase())
 			this.setBase(t);
 		
-		for (Point p: getAdjWalkablePoints(getCurrentPositionPoint())) {
-			PointFrom pf = new PointFrom(p, t.getPoint());
-			unexploredPoints.add(pf);
-		}
+		for (Point p: getAdjWalkablePoints(getCurrentPositionPoint())) 
+			unexploredPoints.add(p);
+		
 
 
 	}
@@ -238,7 +237,7 @@ public class MapImpl implements MapInterface {
 		
 		for (Point p : getAdjWalkablePoints(getCurrentPositionPoint())) {
 			if (!unexploredPoints.contains(p) && !isVisited(p)) 
-				unexploredPoints.add(new PointFrom(p,getCurrentPositionPoint()));
+				unexploredPoints.add(p);
 		}
 		
 	}
@@ -321,7 +320,7 @@ public class MapImpl implements MapInterface {
 	}
 
 	@Override
-	public List<PointFrom> getUnexploredPoints() {
+	public List<Point> getUnexploredPoints() {
 		return unexploredPoints;
 	}
 
