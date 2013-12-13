@@ -32,7 +32,7 @@ public class ExplorerMushroomHunter implements ExplorerInterface {
 	public ExplorerMushroomHunter (AgentProgramES agent) {
 		this.agent = agent;
 		this.map = agent.getMap();
-		path = new LinkedList<Point>();
+		path = null;
 		currentFront = new LinkedList<Point>();
 		unreacheables = new LinkedList<Point>();
 	}
@@ -63,7 +63,7 @@ public class ExplorerMushroomHunter implements ExplorerInterface {
 		
 		checkReachability();
 		
-		if (path != null)
+		if (path != null && path.size() > 0)
 			return MapUtils.movementFromTwoPoints(current, path.remove(0));
 		
 		/* Expand front */
@@ -78,14 +78,15 @@ public class ExplorerMushroomHunter implements ExplorerInterface {
 		
 		
 		Point p;
-		/* unreacheable points (have we detect a wall?) TODO */
-		do  {
-			p = findNearestPoint();
+		p = findNearestPoint();
+		while(p == null){
+			
 			unreacheables.addAll(currentFront);
 			currentFront.clear();
 			expandFront();
-		} while(p == null);
-		/* TODO some err */
+			p = findNearestPoint();
+		} 
+		
 			
 		
 		
@@ -97,27 +98,25 @@ public class ExplorerMushroomHunter implements ExplorerInterface {
 	private void checkReachability() {
 		LinkedList<Point> urc = new LinkedList<Point>();
 		urc.addAll(unreacheables);
+		List<Point> unexplored = map.getUnexploredPoints();
 		Astar astar = new Astar(map);
-		List<Point> pathToN = null;
-		List<Point> ret =  null;
-		int min = Integer.MAX_VALUE;
 		
-		for (Point p : urc) {
-			if (map.isVisited(p)) {
-				unreacheables.remove(p);
+		for (Point point : urc) {
+			/* Maybe these is not necessary TODO */
+			if (map.isVisited(point)) {
+				unreacheables.remove(point);
 				continue;
 			}
 			
-			astar.astar(map.getCurrentPositionPoint(), p);
-			pathToN = astar.getPointPath();
-			
-			if (pathToN.size() < min && pathToN.size() > 0) { 
-				min = pathToN.size();
-				ret = new LinkedList<Point>();
-				ret.addAll(pathToN);
+			if (unexplored.contains(point)) {
+				/* Should be always ad adjacent point to out current position*/
+				unreacheables.remove(point);
+				astar.astar(map.getCurrentPositionPoint(), point);
+				path = astar.getPointPath();
+				return;
 			}
 		}
-		path = ret;
+
 		return;
 	}
 
@@ -131,6 +130,9 @@ public class ExplorerMushroomHunter implements ExplorerInterface {
 		LinkedList<Point> cfc = new LinkedList<Point>();
 		cfc.addAll(currentFront);
 		for (Point p : cfc) {
+			if (!map.getUnexploredPoints().contains(p))
+					continue;
+			
 			astar.astar(map.getCurrentPositionPoint(), p);
 			pathToN = astar.getPointPath();
 			
