@@ -196,7 +196,7 @@ public class MapImpl implements MapInterface {
 			//,
 
 			this.setTile(t);
-
+			updateUnexploredPointListNoMove();
 		}
 		else {
 			// We moved
@@ -216,10 +216,20 @@ public class MapImpl implements MapInterface {
 		}
 		
 		
-		System.out.println(getCurrentPosition().getPoint());
+		//System.out.println(getCurrentPosition().getPoint());
 		
 		if (!colsWallsDetected || !rowsWallsDetected)
 			checkWalls();
+	}
+	
+	private void updateUnexploredPointListNoMove () {
+		/* we remove explored points from unexploredPoints list in setTile method */
+		LinkedList<Point> uec = new LinkedList<Point>();
+		uec.addAll(unexploredPoints);
+		
+		for (Point p : uec) 
+			if (isVisited(p))
+				unexploredPoints.remove(p);
 	}
 
 	private void updateUnexploredPointList() {

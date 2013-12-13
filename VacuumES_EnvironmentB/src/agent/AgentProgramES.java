@@ -186,6 +186,9 @@ public class AgentProgramES implements AgentProgram {
 		
 		
 		map.updateMap(vep, this.lastMovement);
+		System.out.println("Vacuum position is : " + map.getCurrentPosition().getPoint());
+		System.out.println("The unexplored points are :");
+		System.out.println(map.getUnexploredPoints());
 		this.step++;
 		return chooseAction(vep);
 
