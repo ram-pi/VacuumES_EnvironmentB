@@ -77,14 +77,15 @@ public class ExplorerMushroomHunter implements ExplorerInterface {
 		
 		
 		
-		Point p = findNearestPoint();
-		
+		Point p;
 		/* unreacheable points (have we detect a wall?) TODO */
-		if (p == null) {
+		do  {
+			p = findNearestPoint();
 			unreacheables.addAll(currentFront);
 			currentFront.clear();
-			return nextAction();
-		}
+			expandFront();
+		} while(p == null);
+		/* TODO some err */
 			
 		
 		
