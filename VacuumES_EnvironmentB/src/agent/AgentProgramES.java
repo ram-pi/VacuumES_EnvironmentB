@@ -13,6 +13,7 @@ import utils.Astar;
 import utils.Logger;
 import core.LocalVacuumEnvironmentPerceptTaskEnvironmentB;
 import core.VacuumEnvironment.LocationState;
+import explorer.ExplorerDFS;
 import explorer.ExplorerFindWalls;
 import explorer.ExplorerFollowPath;
 import explorer.ExplorerInterface;
@@ -63,7 +64,8 @@ public class AgentProgramES implements AgentProgram {
 		this.step = 0;
 		this.map = new MapImpl(this);
 		//this.explorer = new ExplorerFindWalls(this);
-		this.explorer = new ExplorerMushroomHunter(this);
+		//this.explorer = new ExplorerMushroomHunter(this);
+		this.explorer = new ExplorerDFS(this );
 		lastMovement = null;
 		mapExplored = baseFound = comeBackHome = wallsDetected = false;
 		
