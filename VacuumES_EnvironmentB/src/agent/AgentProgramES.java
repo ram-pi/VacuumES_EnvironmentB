@@ -97,18 +97,17 @@ public class AgentProgramES implements AgentProgram {
 		}
 		
 		if ( !baseFound && vep.isOnBase()) {
-			System.out.println("BASE FOUND");
 			baseFound = true;
 			/* if explorer != mushroomhunter */
-			/* explorer = new ExplorerMushroomHunter(this); */
-			explorer.init(map.getCurrentPositionPoint());
+			//explorer = new ExplorerMushroomHunter(this); 
+			//explorer.init(map.getCurrentPositionPoint());
 		}
 		
 		/* If dirty suck */
-		if (vep.getState().getLocState() == LocationState.Dirty) {
-			lastMovement = null;
-			return suck;
-		} 
+//		if (vep.getState().getLocState() == LocationState.Dirty) {
+//			lastMovement = null;
+//			return suck;
+//		} 
 	
 //		if (!wallsDetected) {
 //			wallsDetected = map.areWallsDetected();
@@ -188,9 +187,6 @@ public class AgentProgramES implements AgentProgram {
 		
 		
 		map.updateMap(vep, this.lastMovement);
-		System.out.println("Vacuum position is : " + map.getCurrentPosition().getPoint());
-		System.out.println("The unexplored points are :");
-		System.out.println(map.getUnexploredPoints());
 		this.step++;
 		return chooseAction(vep);
 

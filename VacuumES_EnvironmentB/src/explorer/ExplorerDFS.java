@@ -1,6 +1,7 @@
 package explorer;
 
 import java.awt.Point;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -8,6 +9,7 @@ import java.util.Random;
 import utils.Astar;
 
 import agent.AgentProgramES;
+
 
 import map.MapInterface;
 import map.MapInterface.Movement;
@@ -19,6 +21,8 @@ public class ExplorerDFS implements ExplorerInterface {
 	private AgentProgramES agent;
 	private List<Point> stack;
 	private List<Point> path;
+	private Movement lastDir;
+	private Random random;
 	
 	
 	public ExplorerDFS(AgentProgramES agent) {
@@ -26,6 +30,8 @@ public class ExplorerDFS implements ExplorerInterface {
 		this.agent = agent;
 		path = new LinkedList<Point>();
 		stack = new LinkedList<Point>();
+		lastDir = Movement.left;
+		random = new Random();
 	
 	}
 	
@@ -55,7 +61,23 @@ public class ExplorerDFS implements ExplorerInterface {
 
 		//TODO choose random
 		if (adj.size() > 0) {
-			Point go = adj.remove(0);
+			Point go = null;
+			Iterator<Point> i = adj.iterator();
+			
+			while(i.hasNext()){
+				Point p = i.next();
+				if (MapUtils.movementFromTwoPoints(current, p) == lastDir) { 
+					i.remove();
+					go = p;
+					break;
+				}
+			}
+			
+			if (go == null) {
+				go = adj.remove(random.nextInt(adj.size()));
+				lastDir = MapUtils.movementFromTwoPoints(current, go);
+			}
+			
 			stack.remove(go);
 				
 			Movement ret = MapUtils.movementFromTwoPoints(current, go);
