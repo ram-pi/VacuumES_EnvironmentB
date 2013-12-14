@@ -34,6 +34,7 @@ public class AgentProgramES implements AgentProgram {
 	private boolean wallsDetected;
 	private boolean comeBackHome;
 	private boolean mapExplored;
+	private boolean inConservativeExploring;
 	
 	private Action suck, left, down, right, up;
 
@@ -67,7 +68,7 @@ public class AgentProgramES implements AgentProgram {
 		//this.explorer = new ExplorerMushroomHunter(this);
 		this.explorer = new ExplorerDFS(this );
 		lastMovement = null;
-		mapExplored = baseFound = comeBackHome = wallsDetected = false;
+		mapExplored = baseFound = comeBackHome = wallsDetected = inConservativeExploring = false;
 		
 	}
 
@@ -87,6 +88,7 @@ public class AgentProgramES implements AgentProgram {
 		//System.out.println("CurrEnergy: " + vep.getCurrentEnergy());
 		if (vep.getCurrentEnergy() <= 0 || (map.isCompletelyExplored() && !baseFound))
 			return NoOpAction.NO_OP;
+		
 		
 		if (comeBackHome && vep.isOnBase())
 			return NoOpAction.NO_OP;

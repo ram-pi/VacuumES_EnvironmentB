@@ -152,6 +152,14 @@ public class MapImpl implements MapInterface {
 		return false;
 	}
 	
+	public boolean isDirty(Point p) {
+		Tile t = getTile(p);
+		if (t == null)
+			return false;
+		return t.isDirty();
+		
+	}
+	
 	public boolean isObstacle(Point p) {
 		if (isWall(p))
 			return true;
@@ -218,6 +226,16 @@ public class MapImpl implements MapInterface {
 		
 		if (!colsWallsDetected || !rowsWallsDetected)
 			checkWalls();
+	}
+	
+	public List<Point> getDirtyKnowsPoints() {
+		List<Point> ret = new LinkedList<Point>();
+		for (Tile t: map.values()) 
+			if (isDirty(t.getPoint())) 
+				ret.add(t.getPoint());
+			
+		return ret;
+		
 	}
 	
 	private void updateUnexploredPointListNoMove () {
