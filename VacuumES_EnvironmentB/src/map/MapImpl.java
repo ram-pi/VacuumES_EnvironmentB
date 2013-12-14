@@ -29,7 +29,6 @@ public class MapImpl implements MapInterface {
 	private int cols,rows;
 
 	private Tile base;
-	private AgentProgram agent;
 
 	private Tile currentPosition;
 	
@@ -38,8 +37,7 @@ public class MapImpl implements MapInterface {
 	private boolean rowsWallsDetected;
 	private boolean colsWallsDetected;
 
-	public MapImpl(AgentProgram a) {
-		this.agent = a;
+	public MapImpl() {
 		this.map = new HashMap<Point, Tile>();
 		this.base = null;
 		minX = minY = 0;
@@ -67,7 +65,7 @@ public class MapImpl implements MapInterface {
 		}
 	}
 	
-	private void setTile(Tile t) {
+	public void setTile(Tile t) {
 		updateMinMax(t);
 		
 		

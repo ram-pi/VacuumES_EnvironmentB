@@ -62,7 +62,7 @@ public class AgentProgramES implements AgentProgram {
 	public AgentProgramES ()
 	{
 		this.step = 0;
-		this.map = new MapImpl(this);
+		this.map = new MapImpl();
 		//this.explorer = new ExplorerFindWalls(this);
 		//this.explorer = new ExplorerMushroomHunter(this);
 		this.explorer = new ExplorerDFS(this );
