@@ -2,6 +2,7 @@ package agent;
 
 
 import java.awt.Point;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -14,7 +15,7 @@ import utils.Logger;
 import core.LocalVacuumEnvironmentPerceptTaskEnvironmentB;
 import core.VacuumEnvironment.LocationState;
 import explorer.ExplorerDFS;
-import explorer.ExplorerFindWalls;
+import explorer.ExplorerFindPath;
 import explorer.ExplorerFollowPath;
 import explorer.ExplorerInterface;
 import explorer.ExplorerMushroomHunter;
@@ -29,15 +30,20 @@ public class AgentProgramES implements AgentProgram {
 	public Movement lastMovement;
 	private MapInterface map;
 	private ExplorerInterface explorer;
-	private Logger log;
-	private boolean baseFound;
-	private boolean wallsDetected;
-	private boolean comeBackHome;
-	private boolean mapExplored;
-	private boolean inConservativeExploring;
-	
+	private List<Point> dirtyKnownPoints;
 	private Action suck, left, down, right, up;
 
+	//states
+	private State state;
+	
+	private enum State { fullExploration, 
+						conservativeExploration, 
+						baseKnownExploration, 
+						cleaningFarAway,  
+						comingBackHome,
+						NO_OP};
+						
+						
 	private void init (Set<Action> actionKeySet) {
 		suck = (Action) actionKeySet.toArray()[0];
 		left = (Action) actionKeySet.toArray()[1];
@@ -60,15 +66,17 @@ public class AgentProgramES implements AgentProgram {
 		return null;
 	}
 	
+
 	public AgentProgramES ()
 	{
 		this.step = 0;
 		this.map = new MapImpl();
 		//this.explorer = new ExplorerFindWalls(this);
 		//this.explorer = new ExplorerMushroomHunter(this);
-		this.explorer = new ExplorerDFS(this );
+		this.explorer = new ExplorerDFS(this);
 		lastMovement = null;
-		mapExplored = baseFound = comeBackHome = wallsDetected = inConservativeExploring = false;
+		state = State.fullExploration;
+		dirtyKnownPoints = new LinkedList<Point>();
 		
 	}
 
@@ -78,104 +86,187 @@ public class AgentProgramES implements AgentProgram {
 	
 	private void initAtFirstStep(LocalVacuumEnvironmentPerceptTaskEnvironmentB vep) {
 		map.setInitialTile(vep);
-		init(vep.getActionEnergyCosts().keySet());
-		
+		init(vep.getActionEnergyCosts().keySet());	
 		explorer.init(map.getCurrentPositionPoint());
 	}
 	
-	private Action chooseAction(LocalVacuumEnvironmentPerceptTaskEnvironmentB vep) {
-
-		//System.out.println("CurrEnergy: " + vep.getCurrentEnergy());
-		if (vep.getCurrentEnergy() <= 0 || (map.isCompletelyExplored() && !baseFound))
-			return NoOpAction.NO_OP;
-		
-		
-		if (comeBackHome && vep.isOnBase())
-			return NoOpAction.NO_OP;
-		
-		if (comeBackHome) {
-			lastMovement = explorer.nextAction();
-			return actionFromMovement(lastMovement);
-		}
-		
-		if ( !baseFound && vep.isOnBase()) {
-			baseFound = true;
-			/* if explorer != mushroomhunter */
-			//explorer = new ExplorerMushroomHunter(this); 
-			//explorer.init(map.getCurrentPositionPoint());
-		}
-		
-		/* If dirty suck */
-//		if (vep.getState().getLocState() == LocationState.Dirty) {
-//			lastMovement = null;
-//			return suck;
-//		} 
-	
-//		if (!wallsDetected) {
-//			wallsDetected = map.areWallsDetected();
-//			if (wallsDetected) {
-//				System.out.println("Wall detected");
-//				explorer = new ExplorerMushroomHunter(this);
-//				explorer.init(map.getCurrentPositionPoint());
-//			}
-//				
-//		}
-		
-		/* We're exploring searching for the base */
-		if (!baseFound) { 
-			lastMovement = explorer.nextAction();
-			return actionFromMovement(lastMovement);
-		}
-		
-		/* baseFound = true */
-		if (!checkForEnergy(vep)) {
-			
-			if (vep.isOnBase())
-				return NoOpAction.NO_OP;
-			
-			explorer = new ExplorerFollowPath(this);
-			explorer.init(map.getBase().getPoint());
-			lastMovement = explorer.nextAction();
-			comeBackHome = true;
-			return actionFromMovement(lastMovement); 		
-		}
-		
-
-		
-		lastMovement = explorer.nextAction();
-		
-		if (!mapExplored && lastMovement == null) {
-			mapExplored = true;
-			comeBackHome = true;
-			
-			if (vep.isOnBase())
-				return NoOpAction.NO_OP;
-			
-			explorer = new ExplorerFollowPath(this);
-			explorer.init(map.getBase().getPoint());
-			lastMovement = explorer.nextAction();
-			
-			return actionFromMovement(lastMovement);
-		}
-		
-		return actionFromMovement(lastMovement);
-		
-		
+	private void switchToBKExploration() {
+		explorer = new ExplorerMushroomHunter(this);
+		explorer.init(map.getBase().getPoint());
+		state = State.baseKnownExploration;
 	}
-	private boolean checkForEnergy(LocalVacuumEnvironmentPerceptTaskEnvironmentB vep) {
+	
+	private void switchToCExploration() {
+		explorer = new ExplorerDFS(this);
+		explorer.init(map.getCurrentPositionPoint());
+		state = State.conservativeExploration;
+	}
+	
+	private void switchToCBHome() {
+		explorer = new ExplorerFollowPath(this);
+		explorer.init(map.getBase().getPoint());
+		state = State.comingBackHome;
+	}
+	
+	private void switchToCFAway() {
+		// TODO Auto-generated method stub
+		Point d = dirtyKnownPoints.get(0);
+		explorer = new ExplorerFollowPath(this);
+		explorer.init(d);
+		state = State.cleaningFarAway;
+	}
+	
+	private boolean checkMinimalEnergy(double currentEnergy) {
 		// TODO check if map.getBase is null */
 		Astar astar = new Astar(map);
 		astar.astar(map.getCurrentPositionPoint(), map.getBase().getPoint());
-		
+
 		List<Point> path = astar.getPointPath();
 		//System.out.println("energy to return to base now: " + path.size());
 		/* have we enough energy to move, suck, remove and come back? */
 		/* TODO get energy action cost from vep */
-		if (path.size() > vep.getCurrentEnergy() - 3)
+		if (path.size() > currentEnergy - 3)
 			return false;
-		
+
+		return true;
+
+	}
+	
+	private boolean wantToCleanFarTiles() {
+		// TODO Auto-generated method stub
+		return dirtyKnownPoints.size()>0;
+	}
+
+	private boolean checkConservativeExploring() {
+		// TODO Auto-generated method stub
 		return true;
 	}
+	
+	private Action chooseAction(LocalVacuumEnvironmentPerceptTaskEnvironmentB vep) {
+
+		while (state != State.NO_OP) {
+			
+			if (vep.getCurrentEnergy() == 0) {
+				System.out.println("NO MORE ENERGY");
+				state = State.NO_OP;
+				continue;
+			}
+			
+			switch(state){
+				case fullExploration:
+					if (vep.isOnBase()) {
+						switchToBKExploration();
+						break;	
+					}
+					if (checkConservativeExploring()){
+						switchToCExploration();
+						break;
+					}
+					/* fall-off state */
+					if (map.isCompletelyExplored()) {
+						switchToCBHome();
+						break;
+						
+					}
+					
+					/* TODO expand for ENV C */
+					if (vep.getState().getLocState() == LocationState.Dirty) {
+						lastMovement = null;
+						return suck;
+					}
+					
+					lastMovement = explorer.nextAction();
+					if (lastMovement == null && map.isCompletelyExplored()) {
+						switchToCBHome();
+						break;
+					}
+					
+					return actionFromMovement(lastMovement);
+					
+				case conservativeExploration:
+					if (vep.isOnBase()) {
+						switchToBKExploration();
+						break;
+					}
+					
+					lastMovement = explorer.nextAction();
+					if (lastMovement == null && map.isCompletelyExplored()) {
+						System.out.println("ERROR: map completely epxlored but no base is found!");
+						return NoOpAction.NO_OP;
+					}
+					
+					return actionFromMovement(lastMovement);
+					
+				case baseKnownExploration:
+					if (!checkMinimalEnergy(vep.getCurrentEnergy())) {
+						switchToCBHome();
+						break;
+					}
+					if (wantToCleanFarTiles()) {
+						switchToCFAway();
+						break;
+					}
+					if (map.isCompletelyExplored()) {
+						switchToCBHome();
+						break;
+					}
+				
+					/* TODO expand for ENV C */
+					if (vep.getState().getLocState() == LocationState.Dirty) {
+						lastMovement = null;
+						return suck;
+					}
+					
+					lastMovement = explorer.nextAction();
+					if (lastMovement == null && map.isCompletelyExplored()) {
+						switchToCBHome();
+						break;
+					}
+					
+					return actionFromMovement(lastMovement);
+					
+
+					
+				case cleaningFarAway:
+					if (!checkMinimalEnergy(vep.getCurrentEnergy())) {
+						switchToCBHome();
+						break;
+					}
+					
+					/* TODO expand for ENV C */
+					if (vep.getState().getLocState() == LocationState.Dirty) {
+						lastMovement = null;
+						return suck;
+					}
+					
+					lastMovement = explorer.nextAction();
+					if (lastMovement == null) {
+						switchToBKExploration();
+						break;
+					}
+					return actionFromMovement(lastMovement);
+					
+				case comingBackHome:
+					
+					lastMovement = explorer.nextAction();
+					/* I'm at home :) */
+					if (lastMovement == null) {
+						System.out.println("I've still "+vep.getCurrentEnergy()+ " E");
+						return NoOpAction.NO_OP;
+					}
+					
+					return actionFromMovement(lastMovement);
+				
+				case NO_OP:
+					return NoOpAction.NO_OP;
+						
+			}
+		}
+		//System.out.println("CurrEnergy: " + vep.getCurrentEnergy());
+		return null;
+	}
+
+
 
 	@Override
 	public Action execute(final Percept percept) {
@@ -186,9 +277,17 @@ public class AgentProgramES implements AgentProgram {
 		if (this.step == 0) {
 			initAtFirstStep(vep);
 		}
-		
+
 		
 		map.updateMap(vep, this.lastMovement);
+		// made a suck last step 
+		if (lastMovement == null) 
+			if (vep.getState().getLocState() == LocationState.Clean)
+				dirtyKnownPoints.remove(map.getCurrentPositionPoint());
+		
+		if (vep.getState().getLocState() == LocationState.Dirty && !dirtyKnownPoints.contains(map.getCurrentPositionPoint()))
+			dirtyKnownPoints.add(map.getCurrentPositionPoint());
+			
 		this.step++;
 		return chooseAction(vep);
 

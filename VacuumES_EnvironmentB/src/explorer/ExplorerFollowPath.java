@@ -39,6 +39,7 @@ public class ExplorerFollowPath implements ExplorerInterface {
 		path = astar.getPointPath();
 		if (path.size() == 0) {
 			/* TODO we are at dest?? */
+			return null;
 		}
 		return MapUtils.movementFromTwoPoints(map.getCurrentPositionPoint(), path.remove(0));
 	}

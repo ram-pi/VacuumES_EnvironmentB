@@ -228,15 +228,7 @@ public class MapImpl implements MapInterface {
 			checkWalls();
 	}
 	
-	public List<Point> getDirtyKnowsPoints() {
-		List<Point> ret = new LinkedList<Point>();
-		for (Tile t: map.values()) 
-			if (isDirty(t.getPoint())) 
-				ret.add(t.getPoint());
-			
-		return ret;
-		
-	}
+
 	
 	private void updateUnexploredPointListNoMove () {
 		/* we remove explored points from unexploredPoints list in setTile method */

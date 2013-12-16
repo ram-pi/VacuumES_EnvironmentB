@@ -28,5 +28,5 @@ public interface MapInterface {
 	public double eucladianDistance(Point from, Point to);
 	public boolean isCompletelyExplored();
 	public void setTile(Tile t);
-	public List<Point> getDirtyKnowsPoints();
+
 }
