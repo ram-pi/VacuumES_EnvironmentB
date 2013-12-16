@@ -11,11 +11,9 @@ import map.MapInterface;
 import map.MapInterface.Movement;
 
 import utils.Astar;
-import utils.Logger;
 import core.LocalVacuumEnvironmentPerceptTaskEnvironmentB;
 import core.VacuumEnvironment.LocationState;
 import explorer.ExplorerDFS;
-import explorer.ExplorerFindPath;
 import explorer.ExplorerFollowPath;
 import explorer.ExplorerInterface;
 import explorer.ExplorerMushroomHunter;
