@@ -30,6 +30,14 @@ public class AgentProgramES implements AgentProgram {
 	private ExplorerInterface explorer;
 	private List<Point> dirtyKnownPoints;
 	private Action suck, left, down, right, up;
+	boolean onoff = false;
+	
+	
+	
+	/* CLASSES */
+	private Class explorerFEClass = ExplorerDFS.class;
+	private Class explorerBKClass = ExplorerDFS.class;
+	private Class explorerCEClass = ExplorerDFS.class;
 	
 	
 	/* statistics */
@@ -76,6 +84,7 @@ public class AgentProgramES implements AgentProgram {
 		//this.explorer = new ExplorerFindWalls(this);
 		//this.explorer = new ExplorerMushroomHunter(this);
 		this.explorer = new ExplorerDFS(this);
+		//explorer = explorerFEClass.getConstructor(parameterTypes)
 		lastMovement = null;
 		state = State.fullExploration;
 		dirtyKnownPoints = new LinkedList<Point>();
@@ -95,6 +104,7 @@ public class AgentProgramES implements AgentProgram {
 	
 	private void switchToBKExploration() {
 		explorer = new ExplorerMushroomHunter(this);
+		//explorer = new ExplorerDFS(this);
 		explorer.init(map.getBase().getPoint());
 		state = State.baseKnownExploration;
 	}
@@ -142,7 +152,7 @@ public class AgentProgramES implements AgentProgram {
 
 	private boolean checkConservativeExploring() {
 		// TODO Auto-generated method stub
-		return true;
+		return false;
 	}
 	
 	private Action chooseAction(LocalVacuumEnvironmentPerceptTaskEnvironmentB vep) {
@@ -280,7 +290,7 @@ public class AgentProgramES implements AgentProgram {
 
 	@Override
 	public Action execute(final Percept percept) {
-
+		
 		final LocalVacuumEnvironmentPerceptTaskEnvironmentB vep = (LocalVacuumEnvironmentPerceptTaskEnvironmentB) percept;
 
 
@@ -290,6 +300,12 @@ public class AgentProgramES implements AgentProgram {
 
 		
 		map.updateMap(vep, this.lastMovement);
+		if (map.isCompletelyExplored() && !onoff) {
+			onoff = true;
+			printStats();
+		}
+		
+		
 		// made a suck last step 
 		if (lastMovement == null) 
 			if (vep.getState().getLocState() == LocationState.Clean)
