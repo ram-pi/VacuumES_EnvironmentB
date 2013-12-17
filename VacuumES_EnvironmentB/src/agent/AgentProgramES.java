@@ -30,6 +30,10 @@ public class AgentProgramES implements AgentProgram {
 	private ExplorerInterface explorer;
 	private List<Point> dirtyKnownPoints;
 	private Action suck, left, down, right, up;
+	
+	
+	/* statistics */
+	private int energyUsed;
 
 	//states
 	private State state;
@@ -75,6 +79,7 @@ public class AgentProgramES implements AgentProgram {
 		lastMovement = null;
 		state = State.fullExploration;
 		dirtyKnownPoints = new LinkedList<Point>();
+		energyUsed = 0;
 		
 	}
 
@@ -104,6 +109,7 @@ public class AgentProgramES implements AgentProgram {
 		explorer = new ExplorerFollowPath(this);
 		explorer.init(map.getBase().getPoint());
 		state = State.comingBackHome;
+		printStats();
 	}
 	
 	private void switchToCFAway() {
@@ -120,19 +126,18 @@ public class AgentProgramES implements AgentProgram {
 		astar.astar(map.getCurrentPositionPoint(), map.getBase().getPoint());
 
 		List<Point> path = astar.getPointPath();
-		//System.out.println("energy to return to base now: " + path.size());
-		/* have we enough energy to move, suck, remove and come back? */
-		/* TODO get energy action cost from vep */
-		if (path.size() > currentEnergy - 3)
-			return false;
+		
+		/* have we enough energy to move (maybe far away from base)  and come back? */
+		if (currentEnergy >= path.size() + 2)
+			return true;
 
-		return true;
+		return false;
 
 	}
 	
 	private boolean wantToCleanFarTiles() {
 		// TODO Auto-generated method stub
-		return dirtyKnownPoints.size()>0;
+		return false;
 	}
 
 	private boolean checkConservativeExploring() {
@@ -245,6 +250,13 @@ public class AgentProgramES implements AgentProgram {
 					return actionFromMovement(lastMovement);
 					
 				case comingBackHome:
+					Astar astar = new Astar(map);
+					int eToBH = astar.astar(map.getCurrentPositionPoint(), map.getBase().getPoint()).getPointPath().size();
+					/* TODO expand for ENV C -- consider suck cost*/
+					if (vep.getState().getLocState() == LocationState.Dirty && vep.getCurrentEnergy() > eToBH) {
+						lastMovement = null;
+						return suck;
+					}
 					
 					lastMovement = explorer.nextAction();
 					/* I'm at home :) */
@@ -261,7 +273,7 @@ public class AgentProgramES implements AgentProgram {
 			}
 		}
 		//System.out.println("CurrEnergy: " + vep.getCurrentEnergy());
-		return null;
+		return NoOpAction.NO_OP;
 	}
 
 
@@ -287,8 +299,25 @@ public class AgentProgramES implements AgentProgram {
 			dirtyKnownPoints.add(map.getCurrentPositionPoint());
 			
 		this.step++;
-		return chooseAction(vep);
+		
+		
+		
+		
+		Action act = chooseAction(vep);
+		if (act == NoOpAction.NO_OP)
+			printStats();
+		
+		if (act != suck) 
+			energyUsed++;
+		
+		return act;
 
+	}
+
+	private void printStats() {
+		System.out.println("Map size: " + (map.getCols()*map.getRows()));
+		System.out.println("Energy Used: " + (energyUsed));
+		System.out.println("Percent: " + (double)(energyUsed)/(map.getCols()*map.getRows()));
 	}
 	
 }

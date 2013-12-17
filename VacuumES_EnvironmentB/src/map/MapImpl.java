@@ -26,7 +26,7 @@ public class MapImpl implements MapInterface {
 
 	private List<Point> unexploredPoints;
 	private Map<Point, Tile> map;
-	private int cols,rows;
+
 
 	private Tile base;
 
@@ -341,5 +341,28 @@ public class MapImpl implements MapInterface {
 	public List<Point> getUnexploredPoints() {
 		return unexploredPoints;
 	}
+
+	@Override
+	public double percentExplored() {
+		return (double)(map.values().size())/cols*rows;
+	}
+	
+	public int getCols() {
+		return cols;
+	}
+
+	public void setCols(int cols) {
+		this.cols = cols;
+	}
+
+	public int getRows() {
+		return rows;
+	}
+
+	public void setRows(int rows) {
+		this.rows = rows;
+	}
+
+	private int cols,rows;
 
 }
