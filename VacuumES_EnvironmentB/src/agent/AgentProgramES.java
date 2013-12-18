@@ -14,6 +14,7 @@ import utils.TourChooser;
 import core.LocalVacuumEnvironmentPerceptTaskEnvironmentB;
 import core.VacuumEnvironment.LocationState;
 import explorer.ExplorerDFS;
+import explorer.ExplorerFollowPath;
 import explorer.ExplorerToDestination;
 import explorer.ExplorerInterface;
 import explorer.ExplorerMushroomHunter;
@@ -77,6 +78,8 @@ public class AgentProgramES implements AgentProgram {
 		//this.explorer = new ExplorerFindWalls(this);
 		//this.explorer = new ExplorerMushroomHunter(this);
 		this.explorer = new ExplorerDFS(this);
+
+
 		lastMovement = null;
 		state = State.fullExploration;
 		dirtyKnownPoints = new LinkedList<Point>();
@@ -98,7 +101,6 @@ public class AgentProgramES implements AgentProgram {
 		/* Standard Behavior */
 		explorer = new ExplorerDFS(this);
 		explorer.init(map.getBase().getPoint());
-		
 		state = State.baseKnownExploration;
 	}
 	
@@ -120,6 +122,7 @@ public class AgentProgramES implements AgentProgram {
 		/* Find minimum Hamiltonian Cycle and give a path to walk it */
 		TourChooser t = new TourChooser(this.map);
 		t.getBestHamiltonianTour();
+
 		this.hamiltonianCycle = t.getHamiltonianCycle();
 		Point nodeToReach = this.hamiltonianCycle.remove(0);
 		explorer = new ExplorerToDestination(this);
@@ -159,7 +162,7 @@ public class AgentProgramES implements AgentProgram {
 			double estimatedUnobservedCells = (this.map.getRows()*this.map.getCols()) - map.getMap().keySet().size();
 			if (this.currentEnergy < estimatedUnobservedCells*2) {
 				System.out.println("GOING IN CONSERVATIVE MODE");
-				return true;
+				return false;
 			}
 		} 
 		
@@ -204,8 +207,8 @@ public class AgentProgramES implements AgentProgram {
 					
 					lastMovement = explorer.nextAction();
 					if (lastMovement == null && map.isCompletelyExplored()) {
-						switchToCBHome();
-						break;
+						System.out.println("ERROR: map completely epxlored but no base is found!");
+						return NoOpAction.NO_OP;
 					}
 					
 					return actionFromMovement(lastMovement);
