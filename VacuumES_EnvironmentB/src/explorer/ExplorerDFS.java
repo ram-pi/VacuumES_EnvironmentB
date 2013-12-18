@@ -31,7 +31,7 @@ public class ExplorerDFS implements ExplorerInterface {
 		path = new LinkedList<Point>();
 		stack = new LinkedList<Point>();
 		lastDir = Movement.left;
-		random = new Random();
+		random = new Random(1);
 	
 	}
 	

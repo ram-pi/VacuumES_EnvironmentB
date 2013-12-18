@@ -27,7 +27,7 @@ public class ExplorerFollowPath implements ExplorerInterface {
 
 	@Override
 	public Movement nextAction() {
-		if (path.get(0).equals(map.getCurrentPositionPoint()))
+		if (path != null && path.size() > 0 && path.get(0).equals(map.getCurrentPositionPoint()))
 				path.remove(0);
 		
 		if (path != null && path.size() > 0)

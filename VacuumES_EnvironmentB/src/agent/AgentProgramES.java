@@ -99,6 +99,8 @@ public class AgentProgramES implements AgentProgram {
 		//this.explorer = new ExplorerMushroomHunter(this);
 		this.explorer = new ExplorerDFS(this);
 
+		
+		bestPaths = new HashMap<Point, HashMap<Point,List<Point>>>();
 
 		lastMovement = null;
 		state = State.fullExploration;
@@ -183,7 +185,7 @@ public class AgentProgramES implements AgentProgram {
 			return false;
 		
 		
-		if (dirtyPointConsidered.size() < 20) {
+		if (dirtyPointConsidered.size() < 1) {
 			tc = new TourChooser(map, currentEnergy, dirtyPointConsidered);
 			if (tc.getPathHamiltonian().size() < currentEnergy) {
 				hamiltonianCycle  = tc.getHamiltonianCycle();
@@ -200,7 +202,7 @@ public class AgentProgramES implements AgentProgram {
 		double min = Integer.MAX_VALUE;
 		List<Point> cellToClean = new LinkedList<Point>();
 		Astar astar = new Astar(map);
-		while (pathFound) {
+		while (!pathFound) {
 			double distance;
 			for (Point point : dirtyPointConsidered) {
 				if (tc != null) {
@@ -217,8 +219,8 @@ public class AgentProgramES implements AgentProgram {
 					next = point;
 				}
 			}
-			
-			if (currEnergy + min > currentEnergy) {
+		
+			if (currEnergy + min > currentEnergy || dirtyPointConsidered.size() == 0) {
 				pathFound = true;
 				if (cellToClean.size() == 0)
 					return false;
@@ -228,8 +230,9 @@ public class AgentProgramES implements AgentProgram {
 			}
 			
 			cellToClean.add(next);
+			dirtyPointConsidered.remove(next);
 			curr = next;
-			
+			currEnergy += min;
 		}
 		
 		return true;
