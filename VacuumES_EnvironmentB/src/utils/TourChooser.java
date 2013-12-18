@@ -68,14 +68,19 @@ public class TourChooser {
 		if (from.equals(to))
 			return null;
 		
-		DefaultWeightedEdge e = this.graph.getEdge(from, to);
+		Edge e = new Edge(from, to);
 		List<Point> path = this.edgePath.get(e);
+		if (path == null) {
+			e = new Edge(to, from);
+			path = this.edgePath.get(e);
+		}
 		return path;
 	}
 
 	public void getBestHamiltonianTour() {
 		HamiltonianCycle ham = new HamiltonianCycle();
 		this.hamiltonianCycle = ham.getApproximateOptimalForCompleteGraph(this.graph);
+		Collections.reverse(this.hamiltonianCycle);
 		System.out.println(this.hamiltonianCycle);
 	}
 
@@ -83,15 +88,13 @@ public class TourChooser {
 		this.getBestHamiltonianTour();
 		List<Point> hamiltonianPath = new LinkedList<Point>();
 		Astar as = new Astar(this.map);
-		Point current = this.hamiltonianCycle.get(0);
+		Point current = this.hamiltonianCycle.remove(0);
 		for (Iterator<Point> iterator = this.hamiltonianCycle.iterator(); iterator.hasNext();) {
 			Point point = (Point) iterator.next();
-			as.astar(current, point);
-			List<Point> tempPath = as.getPointPath();
+			List<Point> tempPath = this.getPathFromEdge(current, point);
 			hamiltonianPath.addAll(tempPath);
 			current = point;
 		}
-		Collections.reverse(hamiltonianPath);
 		System.out.println(hamiltonianPath);
 		return hamiltonianPath;
 	}
