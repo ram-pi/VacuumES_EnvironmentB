@@ -1,6 +1,8 @@
 package utils;
 
 import java.awt.Point;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -80,7 +82,6 @@ public class TourChooser {
 	public List<Point> getPathHamiltonian() {
 		this.getBestHamiltonianTour();
 		List<Point> hamiltonianPath = new LinkedList<Point>();
-		this.hamiltonianCycle.remove(hamiltonianCycle.size()-1);
 		Astar as = new Astar(this.map);
 		Point current = this.hamiltonianCycle.get(0);
 		for (Iterator<Point> iterator = this.hamiltonianCycle.iterator(); iterator.hasNext();) {
@@ -90,6 +91,8 @@ public class TourChooser {
 			hamiltonianPath.addAll(tempPath);
 			current = point;
 		}
+		Collections.reverse(hamiltonianPath);
+		System.out.println(hamiltonianPath);
 		return hamiltonianPath;
 	}
 
