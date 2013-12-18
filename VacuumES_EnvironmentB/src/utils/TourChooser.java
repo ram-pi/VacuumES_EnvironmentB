@@ -21,10 +21,12 @@ public class TourChooser {
 	private Map<Point, Integer> dirtyPointsDistance;
 	private Point farestDirtyPoint;
 	private List<Point> hamiltonianCycle;
+	private double remainingEnergy;
 
-	public TourChooser(MapInterface map) {
+	public TourChooser(MapInterface map, double remainingEnergy) {
 		this.map = map;
 		this.dirtyPointsDistance = new HashMap<Point, Integer>();
+		this.remainingEnergy = remainingEnergy;
 		this.init();
 	}
 
@@ -43,15 +45,18 @@ public class TourChooser {
 		for (Point p : keys) {
 			Tile t = mapInfo.get(p);
 			if (t.isDirty()) {
-				graph.addVertex(p);
 				a.astar(p, base);
-				int distanceFromBase = a.getPath().size();
-				if (distanceFromBase > maxDistance) {
-					maxDistance = distanceFromBase;
-					this.farestDirtyPoint = p;
+				if (a.getPath().size()*2 > this.remainingEnergy ) {
+					break;
+				} else {
+					graph.addVertex(p);
+					int distanceFromBase = a.getPath().size();
+					if (distanceFromBase > maxDistance) {
+						maxDistance = distanceFromBase;
+						this.farestDirtyPoint = p;
+					}
+					dirtyPointsDistance.put(p, distanceFromBase);
 				}
-				dirtyPointsDistance.put(p, distanceFromBase);
-				
 			}
 		}
 		for (Point p1 : graph.vertexSet()) {
@@ -65,13 +70,13 @@ public class TourChooser {
 			}
 		}
 	}
-	
+
 	public void getBestHamiltonianTour() {
 		HamiltonianCycle ham = new HamiltonianCycle();
 		this.hamiltonianCycle = ham.getApproximateOptimalForCompleteGraph(this.graph);
 		System.out.println(this.hamiltonianCycle);
 	}
-	
+
 	public List<Point> getPathHamiltonian() {
 		List<Point> hamiltonianPath = new LinkedList<Point>();
 		this.hamiltonianCycle.remove(hamiltonianCycle.size()-1);
@@ -86,11 +91,11 @@ public class TourChooser {
 		}
 		return hamiltonianPath;
 	}
-	
+
 	public Point getFarestDirtyPoint () {
 		return this.farestDirtyPoint;
 	}
-	
+
 	public List<Point> getHamiltonianCycle() {
 		return this.hamiltonianCycle;
 	}
