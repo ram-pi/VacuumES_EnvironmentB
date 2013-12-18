@@ -14,7 +14,7 @@ import utils.TourChooser;
 import core.LocalVacuumEnvironmentPerceptTaskEnvironmentB;
 import core.VacuumEnvironment.LocationState;
 import explorer.ExplorerDFS;
-import explorer.ExplorerFollowPath;
+import explorer.ExplorerToDestination;
 import explorer.ExplorerInterface;
 import explorer.ExplorerMushroomHunter;
 import aima.core.agent.Action;
@@ -109,7 +109,7 @@ public class AgentProgramES implements AgentProgram {
 	}
 	
 	private void switchToCBHome() {
-		explorer = new ExplorerFollowPath(this);
+		explorer = new ExplorerToDestination(this);
 		explorer.init(map.getBase().getPoint());
 		state = State.comingBackHome;
 		printStats();
@@ -122,14 +122,14 @@ public class AgentProgramES implements AgentProgram {
 		t.getBestHamiltonianTour();
 		this.hamiltonianCycle = t.getHamiltonianCycle();
 		Point nodeToReach = this.hamiltonianCycle.remove(0);
-		explorer = new ExplorerFollowPath(this);
+		explorer = new ExplorerToDestination(this);
 		explorer.init(nodeToReach);
 		state = State.cleaningFarAway;
 	}
 	
 	private void switchToFollowH() {
 		// Init the explorerfollowpath to reach the nodes in the hamiltonianCycle
-		explorer = new ExplorerFollowPath(this);
+		explorer = new ExplorerToDestination(this);
 		Point nodeToReach = this.hamiltonianCycle.remove(0);
 		explorer.init(nodeToReach);
 	}

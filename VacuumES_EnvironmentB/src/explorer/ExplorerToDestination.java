@@ -9,13 +9,13 @@ import map.MapInterface;
 import map.MapInterface.Movement;
 import map.MapUtils;
 
-public class ExplorerFollowPath implements ExplorerInterface {
+public class ExplorerToDestination implements ExplorerInterface {
 
 	private List<Point> path;
 	private Point dest;
 	private MapInterface map;
 	
-	public ExplorerFollowPath(AgentProgramES agent) {
+	public ExplorerToDestination(AgentProgramES agent) {
 		map = agent.getMap();
 		path = null;
 		dest = null;
