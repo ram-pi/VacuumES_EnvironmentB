@@ -2,12 +2,15 @@ package agent;
 
 
 import java.awt.Point;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import map.MapImpl;
 import map.MapInterface;
+import map.MapUtils;
 import map.MapInterface.Movement;
 import utils.Astar;
 import utils.TourChooser;
@@ -30,9 +33,14 @@ public class AgentProgramES implements AgentProgram {
 	private MapInterface map;
 	private ExplorerInterface explorer;
 	private List<Point> dirtyKnownPoints;
-	private List<Point> hamiltonianCycle;
+
 	private Action suck, left, down, right, up;
 	private double currentEnergy;
+	
+	
+	private TourChooser tc;
+	private List<Point> hamiltonianCycle;
+	private HashMap<Point, HashMap<Point, List<Point>>> bestPaths; 
 	
 	/* statistics */
 	private int energyUsed;
@@ -54,6 +62,19 @@ public class AgentProgramES implements AgentProgram {
 		down = (Action) actionKeySet.toArray()[2];
 		right = (Action) actionKeySet.toArray()[3];
 		up = (Action) actionKeySet.toArray()[4];
+	}
+	
+	private void putOnBestPath (Point from, Point to, List<Point> path) {
+		if (!bestPaths.containsKey(from))
+			bestPaths.put(from, new HashMap<Point, List<Point>>());
+		bestPaths.get(from).put(to, path);
+	}
+	
+	private List<Point> getFromBestPath (Point from, Point to) {
+		if (!bestPaths.containsKey(from))
+			return null;
+		
+		return bestPaths.get(from).get(to);
 	}
 	
 	private Action actionFromMovement(Movement m) {
@@ -120,22 +141,16 @@ public class AgentProgramES implements AgentProgram {
 	private void switchToCFAway() {
 		// TODO Auto-generated method stub
 		/* Find minimum Hamiltonian Cycle and give a path to walk it */
-		TourChooser t = new TourChooser(this.map);
-		t.getBestHamiltonianTour();
-
-		this.hamiltonianCycle = t.getHamiltonianCycle();
-		Point nodeToReach = this.hamiltonianCycle.remove(0);
-		explorer = new ExplorerToDestination(this);
-		explorer.init(nodeToReach);
+		explorer = new ExplorerFollowPath(this, hamiltonianCycle);
 		state = State.cleaningFarAway;
 	}
 	
-	private void switchToFollowH() {
-		// Init the explorerfollowpath to reach the nodes in the hamiltonianCycle
-		explorer = new ExplorerToDestination(this);
-		Point nodeToReach = this.hamiltonianCycle.remove(0);
-		explorer.init(nodeToReach);
-	}
+//	private void switchToFollowH() {
+//		// Init the explorerfollowpath to reach the nodes in the hamiltonianCycle
+//		explorer = new ExplorerToDestination(this);
+//		Point nodeToReach = this.hamiltonianCycle.remove(0);
+//		explorer.init(nodeToReach);
+//	}
 	
 	private boolean checkMinimalEnergy(double currentEnergy) {
 		// TODO check if map.getBase is null */
@@ -153,8 +168,89 @@ public class AgentProgramES implements AgentProgram {
 	}
 	
 	private boolean wantToCleanFarTiles() {
-		// TODO Auto-generated method stub
-		return false;
+		
+		List<Point> dirtyPointConsidered = new LinkedList<Point>();
+		if (dirtyKnownPoints.size() == 0)
+			return false;
+
+		for (Point p : dirtyKnownPoints) {
+			if (map.manatthanDistance(map.getCurrentPositionPoint(), p)  > currentEnergy)
+				continue;
+			
+			dirtyPointConsidered.add(p);
+		}
+		
+		if (dirtyPointConsidered.size() == 0)
+			return false;
+		
+		
+		if (dirtyPointConsidered.size() < 20) {
+			tc = new TourChooser(map, currentEnergy, dirtyPointConsidered);
+			if (tc.getPathHamiltonian().size() < currentEnergy) {
+				hamiltonianCycle  = tc.getHamiltonianCycle();
+				return true;
+			}
+		}
+		
+		
+		/* NN */
+		boolean pathFound = false;
+		Point curr = map.getCurrentPositionPoint();
+		Point next = null;
+		int currEnergy = 0;
+		double min = Integer.MAX_VALUE;
+		List<Point> cellToClean = new LinkedList<Point>();
+		Astar astar = new Astar(map);
+		while (pathFound) {
+			double distance;
+			for (Point point : dirtyPointConsidered) {
+				if (tc != null) {
+					distance = tc.getGraph().getEdgeWeight(tc.getGraph().getEdge(curr, point));
+				}
+				else {
+					List<Point> path = new LinkedList<Point>();
+					path = astar.astar(curr, point).getPointPath();
+					putOnBestPath(curr, point, path);
+					distance = path.size();
+				}
+				if (distance < min) {
+					min = distance;
+					next = point;
+				}
+			}
+			
+			if (currEnergy + min > currentEnergy) {
+				pathFound = true;
+				if (cellToClean.size() == 0)
+					return false;
+				
+				hamiltonianCycle = makePathFromPoints(cellToClean);
+				return true;
+			}
+			
+			cellToClean.add(next);
+			curr = next;
+			
+		}
+		
+		return true;
+	}
+
+	private List<Point> makePathFromPoints(List<Point> cellToClean) {
+		Iterator<Point> it = cellToClean.iterator();
+		List<Point> ret = new LinkedList<Point>();
+		Point from = map.getCurrentPositionPoint();
+	
+		while (it.hasNext()) {
+			Point to = it.next();
+			if (tc != null) 
+				ret.addAll(tc.getPathFromEdge(from, to));
+			else
+				ret.addAll(getFromBestPath(from, to));
+			from = to;
+		}
+		
+		return ret;
 	}
 
 	private boolean checkConservativeExploring() {
@@ -162,7 +258,7 @@ public class AgentProgramES implements AgentProgram {
 			double estimatedUnobservedCells = (this.map.getRows()*this.map.getCols()) - map.getMap().keySet().size();
 			if (this.currentEnergy < estimatedUnobservedCells*2) {
 				System.out.println("GOING IN CONSERVATIVE MODE");
-				return false;
+				return true;
 			}
 		} 
 		
