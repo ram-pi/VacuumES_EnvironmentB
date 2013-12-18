@@ -42,7 +42,7 @@ public class TourChooser {
 	public void init() {
 		graph = new SimpleWeightedGraph<Point, DefaultWeightedEdge>(DefaultWeightedEdge.class);
 		Astar a = new Astar(this.getMap());
-		//graph.addVertex(map.getBase().getPoint());
+		graph.addVertex(this.agentPosition);
 		for (Point p : consideredDirty) {
 			a.astar(agentPosition, p);
 			graph.addVertex(p);
