@@ -46,6 +46,7 @@ public class AgentProgramES implements AgentProgram {
 
 	//states
 	private State state;
+	private boolean cleanedFarAway;
 	
 	private enum State { fullExploration, 
 						conservativeExploration, 
@@ -169,6 +170,8 @@ public class AgentProgramES implements AgentProgram {
 	}
 	
 	private boolean wantToCleanFarTiles() {
+		if (cleanedFarAway)
+			return false;
 		
 		List<Point> dirtyPointConsidered = new LinkedList<Point>();
 		if (dirtyKnownPoints.size() == 0)
@@ -189,6 +192,7 @@ public class AgentProgramES implements AgentProgram {
 			tc = new TourChooser(map, currentEnergy, dirtyPointConsidered);
 			if (tc.getPathHamiltonian().size() < currentEnergy) {
 				hamiltonianCycle  = tc.getHamiltonianCycle();
+				cleanedFarAway = true;
 				return true;
 			}
 		}
@@ -204,6 +208,7 @@ public class AgentProgramES implements AgentProgram {
 		Astar astar = new Astar(map);
 		while (!pathFound) {
 			double distance;
+			min = Integer.MAX_VALUE;
 			for (Point point : dirtyPointConsidered) {
 				if (tc != null) {
 					distance = tc.getGraph().getEdgeWeight(tc.getGraph().getEdge(curr, point));
@@ -226,6 +231,7 @@ public class AgentProgramES implements AgentProgram {
 					return false;
 				
 				hamiltonianCycle = makePathFromPoints(cellToClean);
+				cleanedFarAway = true;
 				return true;
 			}
 			
@@ -235,6 +241,7 @@ public class AgentProgramES implements AgentProgram {
 			currEnergy += min;
 		}
 		
+		cleanedFarAway = true;
 		return true;
 	}
 
