@@ -362,6 +362,10 @@ public class MapImpl implements MapInterface {
 	public void setRows(int rows) {
 		this.rows = rows;
 	}
+	
+	public Map<Point, Tile> getMap() {
+		return this.map;
+	}
 
 	private int cols,rows;
 

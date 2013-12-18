@@ -2,6 +2,7 @@ package map;
 
 import java.awt.Point;
 import java.util.List;
+import java.util.Map;
 
 import core.LocalVacuumEnvironmentPerceptTaskEnvironmentB;
 
@@ -32,8 +33,5 @@ public interface MapInterface {
 	
 	public int getCols();
 	public int getRows();
-
-	
-
-
+	public Map<Point, Tile> getMap();
 }

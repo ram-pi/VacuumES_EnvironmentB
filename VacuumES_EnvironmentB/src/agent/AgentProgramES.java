@@ -9,8 +9,8 @@ import java.util.Set;
 import map.MapImpl;
 import map.MapInterface;
 import map.MapInterface.Movement;
-
 import utils.Astar;
+import utils.TourChooser;
 import core.LocalVacuumEnvironmentPerceptTaskEnvironmentB;
 import core.VacuumEnvironment.LocationState;
 import explorer.ExplorerDFS;
@@ -29,6 +29,7 @@ public class AgentProgramES implements AgentProgram {
 	private MapInterface map;
 	private ExplorerInterface explorer;
 	private List<Point> dirtyKnownPoints;
+	private List<Point> hamiltonianPath;
 	private Action suck, left, down, right, up;
 	
 	
@@ -94,6 +95,24 @@ public class AgentProgramES implements AgentProgram {
 	}
 	
 	private void switchToBKExploration() {
+		/* Standard Behavior 
+		explorer = new ExplorerDFS(this);
+		explorer.init(map.getBase().getPoint());
+		*/ 
+		
+		/* Find minimum Hamiltonian Cycle and give a path to walk it */
+		TourChooser t = new TourChooser(this.map);
+		t.getBestHamiltonianTour();
+		this.hamiltonianPath = t.getHamiltonianCycle();
+		Point nodeToReach = this.hamiltonianPath.remove(0);
+		System.out.println("I' m on -> " + map.getCurrentPosition().getPoint() + "The node to reach is -> " + nodeToReach);
+		explorer = new ExplorerFollowPath(this);
+		explorer.init(nodeToReach);
+		
+		state = State.baseKnownExploration;
+	}
+	
+	private void switchToBKExplorationAfterTour() {
 		explorer = new ExplorerMushroomHunter(this);
 		explorer.init(map.getBase().getPoint());
 		state = State.baseKnownExploration;
@@ -158,6 +177,7 @@ public class AgentProgramES implements AgentProgram {
 			switch(state){
 				case fullExploration:
 					if (vep.isOnBase()) {
+						/* Testing the minimal path search */
 						switchToBKExploration();
 						break;	
 					}
@@ -209,7 +229,7 @@ public class AgentProgramES implements AgentProgram {
 						switchToCFAway();
 						break;
 					}
-					if (map.isCompletelyExplored()) {
+					if (map.isCompletelyExplored() && this.dirtyKnownPoints.isEmpty()) {
 						switchToCBHome();
 						break;
 					}
@@ -221,8 +241,17 @@ public class AgentProgramES implements AgentProgram {
 					}
 					
 					lastMovement = explorer.nextAction();
-					if (lastMovement == null && map.isCompletelyExplored()) {
+					if (lastMovement == null && map.isCompletelyExplored() && hamiltonianPath.isEmpty()) {
 						switchToCBHome();
+						break;
+					}
+					if (lastMovement == null && !hamiltonianPath.isEmpty()) {
+						explorer = new ExplorerFollowPath(this);
+						explorer.init(this.hamiltonianPath.remove(0));
+						break;
+					}
+					if (lastMovement == null && !map.isCompletelyExplored()) {
+						switchToBKExplorationAfterTour();
 						break;
 					}
 					
