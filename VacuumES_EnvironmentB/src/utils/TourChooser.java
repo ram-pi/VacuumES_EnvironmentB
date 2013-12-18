@@ -21,10 +21,11 @@ public class TourChooser {
 	private List<Point> consideredDirty;
 	private Map<DefaultWeightedEdge, List<Point>> edgePath;
 
-	public TourChooser(MapInterface map, double remainingEnergy) {
+	public TourChooser(MapInterface map, double remainingEnergy, List<Point> consideredDirty) {
 		this.map = map;
 		this.agentPosition = this.map.getCurrentPositionPoint();
 		this.remainingEnergy = remainingEnergy;
+		this.consideredDirty = consideredDirty;
 		this.init();
 	}
 
@@ -39,7 +40,7 @@ public class TourChooser {
 	public void init() {
 		graph = new SimpleWeightedGraph<Point, DefaultWeightedEdge>(DefaultWeightedEdge.class);
 		Astar a = new Astar(this.getMap());
-		graph.addVertex(map.getBase().getPoint());
+		//graph.addVertex(map.getBase().getPoint());
 		for (Point p : consideredDirty) {
 			a.astar(agentPosition, p);
 			if (a.getPath().size()*2 > remainingEnergy) 
@@ -60,6 +61,9 @@ public class TourChooser {
 	}
 	
 	public List<Point> getPathFromEdge(Point from, Point to) {
+		if (from.equals(to))
+			return null;
+		
 		DefaultWeightedEdge e = this.graph.getEdge(from, to);
 		List<Point> path = this.edgePath.get(e);
 		return path;
