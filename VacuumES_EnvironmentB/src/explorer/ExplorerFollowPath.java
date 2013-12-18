@@ -24,7 +24,6 @@ public class ExplorerFollowPath implements ExplorerInterface {
 	@Override
 	public void init(Point p) {
 		dest = p;
-
 	}
 
 	@Override

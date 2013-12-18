@@ -29,9 +29,9 @@ public class AgentProgramES implements AgentProgram {
 	private MapInterface map;
 	private ExplorerInterface explorer;
 	private List<Point> dirtyKnownPoints;
-	private List<Point> hamiltonianPath;
+	private List<Point> hamiltonianCycle;
 	private Action suck, left, down, right, up;
-	
+	private double currentEnergy;
 	
 	/* statistics */
 	private int energyUsed;
@@ -95,26 +95,10 @@ public class AgentProgramES implements AgentProgram {
 	}
 	
 	private void switchToBKExploration() {
-		/* Standard Behavior 
+		/* Standard Behavior */
 		explorer = new ExplorerDFS(this);
 		explorer.init(map.getBase().getPoint());
-		*/ 
 		
-		/* Find minimum Hamiltonian Cycle and give a path to walk it */
-		TourChooser t = new TourChooser(this.map);
-		t.getBestHamiltonianTour();
-		this.hamiltonianPath = t.getHamiltonianCycle();
-		Point nodeToReach = this.hamiltonianPath.remove(0);
-		System.out.println("I' m on -> " + map.getCurrentPosition().getPoint() + "The node to reach is -> " + nodeToReach);
-		explorer = new ExplorerFollowPath(this);
-		explorer.init(nodeToReach);
-		
-		state = State.baseKnownExploration;
-	}
-	
-	private void switchToBKExplorationAfterTour() {
-		explorer = new ExplorerMushroomHunter(this);
-		explorer.init(map.getBase().getPoint());
 		state = State.baseKnownExploration;
 	}
 	
@@ -133,10 +117,21 @@ public class AgentProgramES implements AgentProgram {
 	
 	private void switchToCFAway() {
 		// TODO Auto-generated method stub
-		Point d = dirtyKnownPoints.get(0);
+		/* Find minimum Hamiltonian Cycle and give a path to walk it */
+		TourChooser t = new TourChooser(this.map);
+		t.getBestHamiltonianTour();
+		this.hamiltonianCycle = t.getHamiltonianCycle();
+		Point nodeToReach = this.hamiltonianCycle.remove(0);
 		explorer = new ExplorerFollowPath(this);
-		explorer.init(d);
+		explorer.init(nodeToReach);
 		state = State.cleaningFarAway;
+	}
+	
+	private void switchToFollowH() {
+		// Init the explorerfollowpath to reach the nodes in the hamiltonianCycle
+		explorer = new ExplorerFollowPath(this);
+		Point nodeToReach = this.hamiltonianCycle.remove(0);
+		explorer.init(nodeToReach);
 	}
 	
 	private boolean checkMinimalEnergy(double currentEnergy) {
@@ -160,11 +155,20 @@ public class AgentProgramES implements AgentProgram {
 	}
 
 	private boolean checkConservativeExploring() {
-		// TODO Auto-generated method stub
-		return true;
+		if (this.map.getBase() == null) {
+			double estimatedUnobservedCells = (this.map.getRows()*this.map.getCols()) - map.getMap().keySet().size();
+			if (this.currentEnergy < estimatedUnobservedCells*2) {
+				System.out.println("GOING IN CONSERVATIVE MODE");
+				return true;
+			}
+		} 
+		
+		return false;
 	}
 	
 	private Action chooseAction(LocalVacuumEnvironmentPerceptTaskEnvironmentB vep) {
+		
+		this.currentEnergy = vep.getCurrentEnergy();
 
 		while (state != State.NO_OP) {
 			
@@ -241,17 +245,12 @@ public class AgentProgramES implements AgentProgram {
 					}
 					
 					lastMovement = explorer.nextAction();
-					if (lastMovement == null && map.isCompletelyExplored() && hamiltonianPath.isEmpty()) {
+					if (lastMovement == null && map.isCompletelyExplored()) {
 						switchToCBHome();
 						break;
 					}
-					if (lastMovement == null && !hamiltonianPath.isEmpty()) {
-						explorer = new ExplorerFollowPath(this);
-						explorer.init(this.hamiltonianPath.remove(0));
-						break;
-					}
 					if (lastMovement == null && !map.isCompletelyExplored()) {
-						switchToBKExplorationAfterTour();
+						switchToBKExploration();
 						break;
 					}
 					
