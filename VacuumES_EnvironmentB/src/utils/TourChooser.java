@@ -1,31 +1,29 @@
 package utils;
 
 import java.awt.Point;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.jgrapht.alg.HamiltonianCycle;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 import map.MapInterface;
-import map.Tile;
 
 public class TourChooser {
 	private MapInterface map;
 	private SimpleWeightedGraph<Point, DefaultWeightedEdge> graph;
-	private Map<Point, Integer> dirtyPointsDistance;
-	private Point farestDirtyPoint;
 	private List<Point> hamiltonianCycle;
 	private double remainingEnergy;
+	private Point agentPosition;
+	private List<Point> consideredDirty;
+	private Map<DefaultWeightedEdge, List<Point>> edgePath;
 
 	public TourChooser(MapInterface map, double remainingEnergy) {
 		this.map = map;
-		this.dirtyPointsDistance = new HashMap<Point, Integer>();
+		this.agentPosition = this.map.getCurrentPositionPoint();
 		this.remainingEnergy = remainingEnergy;
 		this.init();
 	}
@@ -34,30 +32,19 @@ public class TourChooser {
 		return this.graph;
 	}
 
+	public List<Point> getConsideredDirty() {
+		return this.consideredDirty;
+	}
+
 	public void init() {
 		graph = new SimpleWeightedGraph<Point, DefaultWeightedEdge>(DefaultWeightedEdge.class);
-		HashMap<Point, Tile> mapInfo = (HashMap<Point, Tile>) this.getMap().getMap();
 		Astar a = new Astar(this.getMap());
-		Point base = map.getBase().getPoint();
-		Set<Point> keys =  mapInfo.keySet();
 		graph.addVertex(map.getBase().getPoint());
-		int maxDistance = Integer.MIN_VALUE;
-		for (Point p : keys) {
-			Tile t = mapInfo.get(p);
-			if (t.isDirty()) {
-				a.astar(p, base);
-				if (a.getPath().size()*2 > this.remainingEnergy ) {
-					break;
-				} else {
-					graph.addVertex(p);
-					int distanceFromBase = a.getPath().size();
-					if (distanceFromBase > maxDistance) {
-						maxDistance = distanceFromBase;
-						this.farestDirtyPoint = p;
-					}
-					dirtyPointsDistance.put(p, distanceFromBase);
-				}
-			}
+		for (Point p : consideredDirty) {
+			a.astar(agentPosition, p);
+			if (a.getPath().size()*2 > remainingEnergy) 
+				break;
+			graph.addVertex(p);
 		}
 		for (Point p1 : graph.vertexSet()) {
 			for (Point p2 : graph.vertexSet()) {
@@ -65,10 +52,17 @@ public class TourChooser {
 					break;
 				DefaultWeightedEdge e = graph.addEdge(p1, p2);
 				int weight = a.astar(p1, p2).getPath().size();
+				this.edgePath.put(e, a.getPointPath());
 				graph.setEdgeWeight(e, weight);
 				//System.out.println(e + " weight -> " + weight);
 			}
 		}
+	}
+	
+	public List<Point> getPathFromEdge(Point from, Point to) {
+		DefaultWeightedEdge e = this.graph.getEdge(from, to);
+		List<Point> path = this.edgePath.get(e);
+		return path;
 	}
 
 	public void getBestHamiltonianTour() {
@@ -78,6 +72,7 @@ public class TourChooser {
 	}
 
 	public List<Point> getPathHamiltonian() {
+		this.getBestHamiltonianTour();
 		List<Point> hamiltonianPath = new LinkedList<Point>();
 		this.hamiltonianCycle.remove(hamiltonianCycle.size()-1);
 		Astar as = new Astar(this.map);
@@ -90,10 +85,6 @@ public class TourChooser {
 			current = point;
 		}
 		return hamiltonianPath;
-	}
-
-	public Point getFarestDirtyPoint () {
-		return this.farestDirtyPoint;
 	}
 
 	public List<Point> getHamiltonianCycle() {
