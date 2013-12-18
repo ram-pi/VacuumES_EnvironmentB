@@ -73,6 +73,8 @@ public class TourChooser {
 		if (path == null) {
 			e = new Edge(to, from);
 			path = this.edgePath.get(e);
+			Collections.reverse(path);
+			return path;
 		}
 		return path;
 	}
@@ -91,7 +93,8 @@ public class TourChooser {
 		Point current = this.hamiltonianCycle.remove(0);
 		for (Iterator<Point> iterator = this.hamiltonianCycle.iterator(); iterator.hasNext();) {
 			Point point = (Point) iterator.next();
-			List<Point> tempPath = this.getPathFromEdge(current, point);
+			//List<Point> tempPath = this.getPathFromEdge(current, point);
+			List<Point> tempPath = as.astar(current, point).getPointPath();
 			hamiltonianPath.addAll(tempPath);
 			current = point;
 		}
