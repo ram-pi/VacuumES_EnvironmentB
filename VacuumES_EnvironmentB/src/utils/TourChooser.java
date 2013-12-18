@@ -2,6 +2,8 @@ package utils;
 
 import java.awt.Point;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -68,6 +70,21 @@ public class TourChooser {
 		HamiltonianCycle ham = new HamiltonianCycle();
 		this.hamiltonianCycle = ham.getApproximateOptimalForCompleteGraph(this.graph);
 		System.out.println(this.hamiltonianCycle);
+	}
+	
+	public List<Point> getPathHamiltonian() {
+		List<Point> hamiltonianPath = new LinkedList<Point>();
+		this.hamiltonianCycle.remove(hamiltonianCycle.size()-1);
+		Astar as = new Astar(this.map);
+		Point current = this.hamiltonianCycle.get(0);
+		for (Iterator<Point> iterator = this.hamiltonianCycle.iterator(); iterator.hasNext();) {
+			Point point = (Point) iterator.next();
+			as.astar(current, point);
+			List<Point> tempPath = as.getPointPath();
+			hamiltonianPath.addAll(tempPath);
+			current = point;
+		}
+		return hamiltonianPath;
 	}
 	
 	public Point getFarestDirtyPoint () {
