@@ -10,7 +10,6 @@ import java.util.Set;
 
 import map.MapImpl;
 import map.MapInterface;
-import map.MapUtils;
 import map.MapInterface.Movement;
 import utils.Astar;
 import utils.TourChooser;

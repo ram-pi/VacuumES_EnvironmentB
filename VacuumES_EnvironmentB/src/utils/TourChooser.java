@@ -1,6 +1,7 @@
 package utils;
 
 import java.awt.Point;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,13 +20,14 @@ public class TourChooser {
 	private double remainingEnergy;
 	private Point agentPosition;
 	private List<Point> consideredDirty;
-	private Map<DefaultWeightedEdge, List<Point>> edgePath;
+	private Map<Edge, List<Point>> edgePath;
 
 	public TourChooser(MapInterface map, double remainingEnergy, List<Point> consideredDirty) {
 		this.map = map;
 		this.agentPosition = this.map.getCurrentPositionPoint();
 		this.remainingEnergy = remainingEnergy;
 		this.consideredDirty = consideredDirty;
+		this.edgePath = new HashMap<Edge, List<Point>>();
 		this.init();
 	}
 
@@ -43,8 +45,6 @@ public class TourChooser {
 		//graph.addVertex(map.getBase().getPoint());
 		for (Point p : consideredDirty) {
 			a.astar(agentPosition, p);
-			if (a.getPath().size()*2 > remainingEnergy) 
-				break;
 			graph.addVertex(p);
 		}
 		for (Point p1 : graph.vertexSet()) {
@@ -52,10 +52,12 @@ public class TourChooser {
 				if (p1.equals(p2))
 					break;
 				DefaultWeightedEdge e = graph.addEdge(p1, p2);
-				int weight = a.astar(p1, p2).getPath().size();
-				this.edgePath.put(e, a.getPointPath());
+				a.astar(p1, p2);
+				int weight = a.getPointPath().size();
+				Edge ed = new Edge(p1, p2);
+				this.edgePath.put(ed, a.getPointPath());
 				graph.setEdgeWeight(e, weight);
-				//System.out.println(e + " weight -> " + weight);
+				System.out.println(e + " weight -> " + weight);
 			}
 		}
 	}
