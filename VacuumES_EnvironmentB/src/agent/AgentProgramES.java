@@ -504,18 +504,14 @@ public class AgentProgramES implements AgentProgram {
 		
 		
 		Action act = chooseAction(vep);
-		if (act == NoOpAction.NO_OP)
-			printStats();
-		
-		if (act != suck) 
-			energyUsed++;
+
 		
 		return act;
 
 	}
 
 	private void printStats() {
-		System.out.println("Map size: " + (map.ggrols()*map.getRows()));
+		System.out.println("Map size: " + (map.getCols()*map.getRows()));
 		System.out.println("Energy Used: " + (energyUsed));
 		System.out.println("Percent: " + (double)(energyUsed)/(map.getCols()*map.getRows()));
 	}
