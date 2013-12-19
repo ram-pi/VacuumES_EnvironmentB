@@ -232,8 +232,16 @@ public class ExplorerMushroomHunter implements ExplorerInterface {
 	}
 
 	private void expandFront() {
-		int d = ++currentFrontDistance;
-
+		
+		//int d = ++currentFrontDistance;
+		double valx = Math.abs(map.getBase().getPoint().getX()-map.getNearestUnexplored(map.getBase().getPoint()).getX());
+		double valy = Math.abs(map.getBase().getPoint().getY()-map.getNearestUnexplored(map.getBase().getPoint()).getY());
+		int d;
+		if (valx > valy)
+			d = (int) valx;
+		else 
+			d = (int) valy;
+		
 		Point p;
 		for (int i = start.x - d; i <= start.x + d; i++) {
 			p = new Point(i, start.y+d);

@@ -12,6 +12,7 @@ import map.MapImpl;
 import map.MapInterface;
 import map.MapInterface.Movement;
 import utils.Astar;
+import utils.Edge;
 import utils.TourChooser;
 import core.LocalVacuumEnvironmentPerceptTaskEnvironmentB;
 import core.VacuumEnvironment.LocationState;
@@ -185,8 +186,9 @@ public class AgentProgramES implements AgentProgram {
 			return false;
 		
 		
-		if (dirtyPointConsidered.size() < 1) {
-			tc = new TourChooser(map, currentEnergy, dirtyPointConsidered);
+		if (dirtyPointConsidered.size() < 20) {
+			Point end = map.getNearestUnexplored(map.getCurrentPositionPoint());
+			tc = new TourChooser(map, currentEnergy, dirtyPointConsidered, end);
 			List<Point> hamiltonianPath = tc.getPathHamiltonian();
 			if (hamiltonianPath.size() < currentEnergy) {
 				hamiltonianCycle  = hamiltonianPath;
@@ -318,7 +320,7 @@ public class AgentProgramES implements AgentProgram {
 		while (it.hasNext()) {
 			Point to = it.next();
 			if (tc != null) 
-				ret.addAll(tc.getPathFromEdge(from, to));
+				ret.addAll(tc.getPathFromEdge(new Edge(from, to)));
 			else
 				ret.addAll(getFromBestPath(from, to));
 			from = to;

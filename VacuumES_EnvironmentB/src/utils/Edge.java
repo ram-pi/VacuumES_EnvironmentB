@@ -25,6 +25,11 @@ public class Edge {
 	public void setTo(Point to) {
 		this.to = to;
 	}
+	
+	@Override
+	public String toString() {
+		return "Edge from " + this.getFrom().x + " " + this.getFrom().y + " to " + this.getTo().x + " " + this.getTo().y;
+	};
 
 	@Override
 	public int hashCode() {
@@ -43,6 +48,7 @@ public class Edge {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
+		
 		Edge other = (Edge) obj;
 		if (from == null) {
 			if (other.from != null)
@@ -55,5 +61,15 @@ public class Edge {
 		} else if (!to.equals(other.to))
 			return false;
 		return true;
+	}
+	
+	public static void main(String[] args) {
+		Point from = new Point(-5, 9);
+		Point to = new Point(-5, 1);
+		Edge e1 = new Edge(from, to);
+		Edge e2 = new Edge(to, from);
+		System.out.println(e1.hashCode());
+		System.out.println(e2.hashCode());
+		System.out.println(e1.equals(e2));
 	}
 }
