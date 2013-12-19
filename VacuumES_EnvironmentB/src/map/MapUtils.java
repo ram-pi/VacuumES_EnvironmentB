@@ -46,7 +46,7 @@ public class MapUtils {
 			return Movement.up;
 
 		/* TODO some err */
-		System.out.println("Due punti non sono adiacenti in MovementFromTwoPoints");
+
 		return null;
 	}
 	

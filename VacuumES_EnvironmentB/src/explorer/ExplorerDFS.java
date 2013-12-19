@@ -116,9 +116,7 @@ public class ExplorerDFS implements ExplorerInterface {
 		
 		Astar a = new Astar(map);
 		path = a.astar(current, to).getPointPath();
-		
-		if (path == null || path.size() == 0)
-			System.out.println("ERROR, find path to an unreacheable point!");
+
 		
 		return MapUtils.movementFromTwoPoints(current, path.remove(0));
 		
