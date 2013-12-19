@@ -332,7 +332,7 @@ public class AgentProgramES implements AgentProgram {
 	private boolean checkConservativeExploring() {
 		
 		double estimatedUnobservedCells = (this.map.getRows()*this.map.getCols()) - map.getMap().keySet().size();
-		if (this.currentEnergy < estimatedUnobservedCells*1.6) {
+		if (this.currentEnergy < estimatedUnobservedCells*1.4) {
 			System.out.println("GOING IN CONSERVATIVE MODE");
 			return true;
 		}
