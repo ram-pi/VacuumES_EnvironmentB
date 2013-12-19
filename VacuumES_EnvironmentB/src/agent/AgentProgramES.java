@@ -188,7 +188,7 @@ public class AgentProgramES implements AgentProgram {
 			return false;
 		
 		
-		if (dirtyPointConsidered.size() < 20) {
+		if (dirtyPointConsidered.size() < 1) {
 			tc = new TourChooser(map, currentEnergy, dirtyPointConsidered);
 			List<Point> hamiltonianPath = tc.getPathHamiltonian();
 			if (hamiltonianPath.size() < currentEnergy) {
@@ -226,10 +226,13 @@ public class AgentProgramES implements AgentProgram {
 				}
 			}
 		
-			if (currEnergy + min > currentEnergy || dirtyPointConsidered.size() == 0) {
+			
+			if (dirtyPointConsidered.size() == 0 || !checkPathCost(next, (int)(currEnergy+min))) {
 				pathFound = true;
-				if (cellToClean.size() == 0)
+				if (cellToClean.size() == 0) {
+					cleanedFarAway = true;
 					return false;
+				}
 				
 				hamiltonianCycle = makePathFromPoints(cellToClean);
 				cleanedFarAway = true;
@@ -239,13 +242,57 @@ public class AgentProgramES implements AgentProgram {
 			cellToClean.add(next);
 			dirtyPointConsidered.remove(next);
 			curr = next;
-			currEnergy += min;
+			currEnergy += min + 1;
 		}
 		
 		cleanedFarAway = true;
 		return true;
 	}
 
+	private boolean checkPathCost(Point last, int currEnergy) {
+	
+		List<Point> lastToNextUnexplored;
+		List<Point> toHome;
+		
+		Astar astar = new Astar(map);
+		
+		Point nu = map.getNearestUnexplored();
+		
+		if (nu != null) {
+			lastToNextUnexplored = getFromBestPath(last, nu);
+
+			if (lastToNextUnexplored == null) {
+					lastToNextUnexplored = astar.astar(last, nu).getPointPath();
+					putOnBestPath(last, nu, lastToNextUnexplored);
+			}
+			
+			toHome = getFromBestPath(nu, map.getBase().getPoint()); 
+			
+			if (toHome == null) {
+				toHome = astar.astar(nu, map.getBase().getPoint()).getPointPath();
+				putOnBestPath(nu, map.getBase().getPoint(), toHome);
+			}
+			
+			if (currEnergy + lastToNextUnexplored.size() + toHome.size() + 1 < currentEnergy) { 
+				return true;
+			}
+		}
+		
+		//else
+		toHome = getFromBestPath(last, map.getBase().getPoint()); 
+				
+		if (toHome == null) {
+			toHome = astar.astar(last, map.getBase().getPoint()).getPointPath();
+			putOnBestPath(last, map.getBase().getPoint(), toHome);
+		}
+				
+		if (currEnergy + toHome.size() < currentEnergy)
+					return true;
+		
+		
+		return false;
+	}
+	
 	private List<Point> makePathFromPoints(List<Point> cellToClean) {
 		Iterator<Point> it = cellToClean.iterator();
 		List<Point> ret = new LinkedList<Point>();
@@ -260,7 +307,25 @@ public class AgentProgramES implements AgentProgram {
 			from = to;
 		}
 		
+		/* add to unexplored or to base */
+		Point last = ret.get(ret.size()-1);
+		Point nu = map.getNearestUnexplored();
+		
+		List<Point> lastToNu;
+		List<Point> toHome;
+		
+		if (nu != null) {
+			lastToNu = getFromBestPath(last, nu);
+			toHome = getFromBestPath(nu, map.getBase().getPoint());
+			
+			if (ret.size() + lastToNu.size() + toHome.size() < currentEnergy) {
+				ret.addAll(lastToNu);		
+				return ret;
+			}
+		}
+
 		return ret;
+
 	}
 
 	private boolean checkConservativeExploring() {
