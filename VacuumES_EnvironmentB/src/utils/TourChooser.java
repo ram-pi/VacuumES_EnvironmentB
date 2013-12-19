@@ -12,6 +12,7 @@ import org.jgrapht.alg.HamiltonianCycle;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
+import aima.core.search.nondeterministic.Path;
 import map.MapInterface;
 
 public class TourChooser {
@@ -100,7 +101,7 @@ public class TourChooser {
 	public void getBestHamiltonianTour() {
 		HamiltonianCycle ham = new HamiltonianCycle();
 		this.hamiltonianCycle = ham.getApproximateOptimalForCompleteGraph(this.graph);
-		//System.out.println("The Hamiltonian cycle before fixing is -> " + this.hamiltonianCycle);
+		System.out.println("The Hamiltonian cycle before fixing is -> " + this.hamiltonianCycle);
 		fixCycle();
 		//System.out.println("The Hamiltonian cycle is -> " + this.hamiltonianCycle);
 	}
@@ -119,16 +120,19 @@ public class TourChooser {
 			List<Point> tempPath = this.getPathFromEdge(new Edge(current, point));
 			//System.out.println("Getting path from " + current + " to " + point + "\n" + tempPath);
 			//List<Point> tempPath = as.astar(current, point).getPointPath();
+			if (tempPath == null)
+				continue;
 			hamiltonianPath.addAll(tempPath);
 			current = point;
 		}
 		//System.out.println("The path to perform the cycle is -> " + hamiltonianPath);
+		printStats();
 		return hamiltonianPath; 
 	}
 	
 	public void addDummy() {
 		double maxDistance = (double) map.getCols()*map.getRows()+1;
-		Point dummy = new Point(this.map.getRows()+1, this.map.getCols());
+		Point dummy = new Point(this.map.getRows()+1, this.map.getCols()+1);
 		this.graph.addVertex(dummy);
 		DefaultWeightedEdge e = this.graph.addEdge(end, dummy);
 		this.graph.setEdgeWeight(e, maxDistance-1);
@@ -150,6 +154,24 @@ public class TourChooser {
 			hamiltonianCycle.remove(hsize-1);
 			hsize  = hamiltonianCycle.size();
 			hamiltonianCycle.remove(hsize-2);
+		}
+	}
+	
+	public void printStats() {
+		System.out.println("End node is ->" + this.end);
+		System.out.println("Current position is ->" + this.agentPosition);
+		printGraph();
+	}
+	
+	public void printGraph() {
+		for (Point p1 : graph.vertexSet()) {
+			for (Point p2 : graph.vertexSet()) {
+				if (p1.equals(p2))
+					break;
+				DefaultWeightedEdge e = graph.getEdge(p1, p2);
+				double w = graph.getEdgeWeight(e);
+				System.out.println(p1 + " " + p2 + " " + w);
+			}
 		}
 	}
 

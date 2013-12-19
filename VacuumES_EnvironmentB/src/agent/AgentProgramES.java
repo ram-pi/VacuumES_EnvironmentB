@@ -186,16 +186,16 @@ public class AgentProgramES implements AgentProgram {
 			return false;
 		
 		
-		if (dirtyPointConsidered.size() < 20) {
-			Point end = map.getNearestUnexplored(map.getCurrentPositionPoint());
-			tc = new TourChooser(map, currentEnergy, dirtyPointConsidered, end);
-			List<Point> hamiltonianPath = tc.getPathHamiltonian();
-			if (hamiltonianPath.size() < currentEnergy) {
-				hamiltonianCycle  = hamiltonianPath;
-				cleanedFarAway = true;
-				return true;
-			}
-		}
+//		if (dirtyPointConsidered.size() < 20) {
+//			Point end = map.getNearestUnexplored(map.getCurrentPositionPoint());
+//			tc = new TourChooser(map, currentEnergy, dirtyPointConsidered, end);
+//			List<Point> hamiltonianPath = tc.getPathHamiltonian();
+//			if (hamiltonianPath.size() < currentEnergy) {
+//				hamiltonianCycle  = hamiltonianPath;
+//				cleanedFarAway = true;
+//				return true;
+//			}
+//		}
 		
 		
 		/* NN */
