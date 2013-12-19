@@ -12,8 +12,6 @@ import map.MapImpl;
 import map.MapInterface;
 import map.MapInterface.Movement;
 import utils.Astar;
-import utils.Edge;
-import utils.TourChooser;
 import core.LocalVacuumEnvironmentPerceptTaskEnvironmentB;
 import core.VacuumEnvironment.LocationState;
 import explorer.ExplorerDFS;
@@ -38,7 +36,7 @@ public class AgentProgramES implements AgentProgram {
 	private double currentEnergy;
 	
 	
-	private TourChooser tc;
+	
 	private List<Point> hamiltonianCycle;
 	private HashMap<Point, HashMap<Point, List<Point>>> bestPaths; 
 	
@@ -127,6 +125,7 @@ public class AgentProgramES implements AgentProgram {
 			cleanedFarAway = true;
 		
 		explorer = new ExplorerMushroomHunter(this);
+		//explorer = new ExplorerDFS(this);
 		explorer.init(map.getBase().getPoint());
 		state = State.baseKnownExploration;
 	}
@@ -160,7 +159,7 @@ public class AgentProgramES implements AgentProgram {
 		List<Point> path = astar.getPointPath();
 		
 		/* have we enough energy to move (maybe far away from base)  and come back? */
-		if (currentEnergy >= path.size() + 2)
+		if (currentEnergy > path.size() + 1)
 			return true;
 
 		return false;
@@ -198,15 +197,12 @@ public class AgentProgramES implements AgentProgram {
 			double distance;
 			min = Integer.MAX_VALUE;
 			for (Point point : dirtyPointConsidered) {
-				if (tc != null) {
-					distance = tc.getGraph().getEdgeWeight(tc.getGraph().getEdge(curr, point));
-				}
-				else {
-					List<Point> path = new LinkedList<Point>();
-					path = astar.astar(curr, point).getPointPath();
-					putOnBestPath(curr, point, path);
-					distance = path.size();
-				}
+
+				List<Point> path = new LinkedList<Point>();
+				path = astar.astar(curr, point).getPointPath();
+				putOnBestPath(curr, point, path);
+				distance = path.size();
+
 				if (distance < min) {
 					min = distance;
 					next = point;
@@ -336,7 +332,7 @@ public class AgentProgramES implements AgentProgram {
 	private boolean checkConservativeExploring() {
 		
 		double estimatedUnobservedCells = (this.map.getRows()*this.map.getCols()) - map.getMap().keySet().size();
-		if (this.currentEnergy < estimatedUnobservedCells*2) {
+		if (this.currentEnergy < estimatedUnobservedCells*1.6) {
 			System.out.println("GOING IN CONSERVATIVE MODE");
 			return true;
 		}
@@ -519,7 +515,7 @@ public class AgentProgramES implements AgentProgram {
 	}
 
 	private void printStats() {
-		System.out.println("Map size: " + (map.getCols()*map.getRows()));
+		System.out.println("Map size: " + (map.ggrols()*map.getRows()));
 		System.out.println("Energy Used: " + (energyUsed));
 		System.out.println("Percent: " + (double)(energyUsed)/(map.getCols()*map.getRows()));
 	}
