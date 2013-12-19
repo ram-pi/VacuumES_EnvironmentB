@@ -186,18 +186,6 @@ public class AgentProgramES implements AgentProgram {
 			return false;
 		
 		
-//		if (dirtyPointConsidered.size() < 20) {
-//			Point end = map.getNearestUnexplored(map.getCurrentPositionPoint());
-//			tc = new TourChooser(map, currentEnergy, dirtyPointConsidered, end);
-//			List<Point> hamiltonianPath = tc.getPathHamiltonian();
-//			if (hamiltonianPath.size() < currentEnergy) {
-//				hamiltonianCycle  = hamiltonianPath;
-//				cleanedFarAway = true;
-//				return true;
-//			}
-//		}
-		
-		
 		/* NN */
 		boolean pathFound = false;
 		Point curr = map.getCurrentPositionPoint();
@@ -320,10 +308,7 @@ public class AgentProgramES implements AgentProgram {
 	
 		while (it.hasNext()) {
 			Point to = it.next();
-			if (tc != null) 
-				ret.addAll(tc.getPathFromEdge(new Edge(from, to)));
-			else
-				ret.addAll(getFromBestPath(from, to));
+			ret.addAll(getFromBestPath(from, to));
 			from = to;
 		}
 		
