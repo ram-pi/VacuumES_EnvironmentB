@@ -30,6 +30,7 @@ public interface MapInterface {
 	public boolean isCompletelyExplored();
 	public void setTile(Tile t);
 	public double percentExplored();
+	public Point getNearestUnexplored();
 	
 	public int getCols();
 	public int getRows();
