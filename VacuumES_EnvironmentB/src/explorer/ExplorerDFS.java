@@ -59,7 +59,7 @@ public class ExplorerDFS implements ExplorerInterface {
 				adj.remove(point);
 		}
 
-		//TODO choose random
+		
 		if (adj.size() > 0) {
 			Point go = null;
 			Iterator<Point> i = adj.iterator();
@@ -94,7 +94,7 @@ public class ExplorerDFS implements ExplorerInterface {
 		if (stack.size() > 0)
 			return goTo(stack.remove(stack.size()-1));
 		
-		/* TODO take the nearest one */
+		
 		return goTo(map.getNearestUnexplored(map.getCurrentPositionPoint()));
 			
 		

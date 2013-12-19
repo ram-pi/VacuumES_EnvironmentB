@@ -144,7 +144,7 @@ public class AgentProgramES implements AgentProgram {
 	}
 	
 	private void switchToCFAway() {
-		// TODO Auto-generated method stub
+		
 		/* Find minimum Hamiltonian Cycle and give a path to walk it */
 		explorer = new ExplorerFollowPath(this, hamiltonianCycle);
 		state = State.cleaningFarAway;
@@ -152,7 +152,7 @@ public class AgentProgramES implements AgentProgram {
 	
 	
 	private boolean checkMinimalEnergy(double currentEnergy) {
-		// TODO check if map.getBase is null */
+		
 		Astar astar = new Astar(map);
 		astar.astar(map.getCurrentPositionPoint(), map.getBase().getPoint());
 
@@ -303,9 +303,10 @@ public class AgentProgramES implements AgentProgram {
 		putOnBestPath(map.getCurrentPositionPoint(), map.getBase().getPoint(), toHome);
 		}
 
-		/* TODO change for ENV C in an heuristic 2??? */
-		if (toHome.size() + 1 >= currentEnergy) 
+		
+		if (currentEnergy >= toHome.size() + 1 ) 
 			return true;
+		
 		return false;
 			
 	}
@@ -385,7 +386,7 @@ public class AgentProgramES implements AgentProgram {
 						
 					}
 					
-					/* TODO expand for ENV C */
+					
 					if (vep.getState().getLocState() == LocationState.Dirty) {
 						lastMovement = null;
 						return suck;
@@ -428,7 +429,7 @@ public class AgentProgramES implements AgentProgram {
 						break;
 					}
 				
-					/* TODO expand for ENV C */
+					
 					if (vep.getState().getLocState() == LocationState.Dirty) {
 						lastMovement = null;
 						return suck;
@@ -454,7 +455,7 @@ public class AgentProgramES implements AgentProgram {
 						break;
 					}
 					
-					/* TODO expand for ENV C */
+					
 					if (vep.getState().getLocState() == LocationState.Dirty) {
 						lastMovement = null;
 						return suck;
@@ -468,7 +469,7 @@ public class AgentProgramES implements AgentProgram {
 					return actionFromMovement(lastMovement);
 					
 				case comingBackHome:
-					/* TODO expand for ENV C -- consider suck cost*/
+					
 					if (vep.getState().getLocState() == LocationState.Dirty && suck()) {
 						lastMovement = null;
 						return suck;

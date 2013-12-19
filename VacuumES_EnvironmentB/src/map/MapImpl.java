@@ -123,7 +123,7 @@ public class MapImpl implements MapInterface {
 		return this.map.containsKey(t.getPoint());
 	}
 
-	//TODO check if is visited e
+	
 	public boolean isWall(Point p) {
 		if (p.x < -cols + 1 + maxX)
 			return true;
@@ -145,7 +145,7 @@ public class MapImpl implements MapInterface {
 		if (this.isVisited(t))
 			return this.map.get(t.getPoint()).isWall();
 
-		//TODO some err
+		
 		return false;
 	}
 
@@ -164,7 +164,7 @@ public class MapImpl implements MapInterface {
 		if (this.getTile(p) != null)
 			return this.map.get(p).isObstacle();
 
-		//TODO some err
+		
 		return false;
 	}
 
