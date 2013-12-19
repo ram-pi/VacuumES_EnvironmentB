@@ -37,7 +37,7 @@ public class AgentProgramES implements AgentProgram {
 	
 	
 	
-	private List<Point> hamiltonianCycle;
+	private List<Point> cleanFarAwayPath;
 	private HashMap<Point, HashMap<Point, List<Point>>> bestPaths; 
 	
 	/* statistics */
@@ -146,7 +146,7 @@ public class AgentProgramES implements AgentProgram {
 	private void switchToCFAway() {
 		
 		/* Find minimum Hamiltonian Cycle and give a path to walk it */
-		explorer = new ExplorerFollowPath(this, hamiltonianCycle);
+		explorer = new ExplorerFollowPath(this, cleanFarAwayPath);
 		state = State.cleaningFarAway;
 	}
 	
@@ -217,7 +217,7 @@ public class AgentProgramES implements AgentProgram {
 					return false;
 				}
 				
-				hamiltonianCycle = makePathFromPoints(cellToClean);
+				cleanFarAwayPath = makePathFromPoints(cellToClean);
 				cleanedFarAway = true;
 				return true;
 			}
