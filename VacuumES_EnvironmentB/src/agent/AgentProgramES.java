@@ -260,7 +260,7 @@ public class AgentProgramES implements AgentProgram {
 				putOnBestPath(nu, map.getBase().getPoint(), toHome);
 			}
 			
-			if (currEnergy + lastToNextUnexplored.size() + toHome.size() + 1 < currentEnergy) { 
+			if (currEnergy + lastToNextUnexplored.size() + toHome.size() < currentEnergy) { 
 				return true;
 			}
 		}
@@ -294,7 +294,7 @@ public class AgentProgramES implements AgentProgram {
 		}
 
 		
-		if (currentEnergy >= toHome.size() + 1 ) 
+		if (currentEnergy > toHome.size() ) 
 			return true;
 		
 		return false;
