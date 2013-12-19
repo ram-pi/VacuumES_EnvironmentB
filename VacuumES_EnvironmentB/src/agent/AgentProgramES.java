@@ -122,7 +122,10 @@ public class AgentProgramES implements AgentProgram {
 	
 	private void switchToBKExploration() {
 		/* Standard Behavior */
-		explorer = new ExplorerDFS(this);
+		if (dirtyKnownPoints.size() == 0)
+			cleanedFarAway = true;
+		
+		explorer = new ExplorerMushroomHunter(this);
 		explorer.init(map.getBase().getPoint());
 		state = State.baseKnownExploration;
 	}
@@ -147,12 +150,6 @@ public class AgentProgramES implements AgentProgram {
 		state = State.cleaningFarAway;
 	}
 	
-//	private void switchToFollowH() {
-//		// Init the explorerfollowpath to reach the nodes in the hamiltonianCycle
-//		explorer = new ExplorerToDestination(this);
-//		Point nodeToReach = this.hamiltonianCycle.remove(0);
-//		explorer.init(nodeToReach);
-//	}
 	
 	private boolean checkMinimalEnergy(double currentEnergy) {
 		// TODO check if map.getBase is null */
@@ -256,7 +253,7 @@ public class AgentProgramES implements AgentProgram {
 		
 		Astar astar = new Astar(map);
 		
-		Point nu = map.getNearestUnexplored();
+		Point nu = map.getNearestUnexplored(map.getBase().getPoint());
 		
 		if (nu != null) {
 			lastToNextUnexplored = getFromBestPath(last, nu);
@@ -309,7 +306,7 @@ public class AgentProgramES implements AgentProgram {
 		
 		/* add to unexplored or to base */
 		Point last = ret.get(ret.size()-1);
-		Point nu = map.getNearestUnexplored();
+		Point nu = map.getNearestUnexplored(map.getBase().getPoint());
 		
 		List<Point> lastToNu;
 		List<Point> toHome;
@@ -329,14 +326,12 @@ public class AgentProgramES implements AgentProgram {
 	}
 
 	private boolean checkConservativeExploring() {
-		if (this.map.getBase() == null) {
-			double estimatedUnobservedCells = (this.map.getRows()*this.map.getCols()) - map.getMap().keySet().size();
-			if (this.currentEnergy < estimatedUnobservedCells*2) {
-				System.out.println("GOING IN CONSERVATIVE MODE");
-				return true;
-			}
-		} 
 		
+		double estimatedUnobservedCells = (this.map.getRows()*this.map.getCols()) - map.getMap().keySet().size();
+		if (this.currentEnergy < estimatedUnobservedCells*2) {
+			System.out.println("GOING IN CONSERVATIVE MODE");
+			return true;
+		}
 		return false;
 	}
 	

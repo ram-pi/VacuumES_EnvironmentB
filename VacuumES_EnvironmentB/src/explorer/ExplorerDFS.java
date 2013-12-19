@@ -95,7 +95,7 @@ public class ExplorerDFS implements ExplorerInterface {
 			return goTo(stack.remove(stack.size()-1));
 		
 		/* TODO take the nearest one */
-		return goTo(map.getUnexploredPoints().get(0));
+		return goTo(map.getNearestUnexplored(map.getCurrentPositionPoint()));
 			
 		
 	}

@@ -367,12 +367,12 @@ public class MapImpl implements MapInterface {
 	private int cols,rows;
 
 	@Override
-	public Point getNearestUnexplored() {
+	public Point getNearestUnexplored(Point p) {
 		Point nearest = null;
 		List<Point> unexplored = this.getUnexploredPoints();
 		int minDistance = Integer.MAX_VALUE;
 		for (Point tmp : unexplored) {
-			int tmpDistance = this.manatthanDistance(this.currentPosition.getPoint(), tmp);
+			int tmpDistance = this.manatthanDistance(p, tmp);
 			if (tmpDistance < minDistance) {
 				nearest = tmp;
 				minDistance = tmpDistance;
