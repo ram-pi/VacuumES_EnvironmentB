@@ -163,8 +163,6 @@ public class Astar {
 			openList.remove(current);
 			closedList.add(current);
 
-			//if (current == null)
-			//system.out.println("current is null");
 
 
 			// Find the adjacent tiles to current position
@@ -299,7 +297,6 @@ public class Astar {
 	}
 
 	public void printPath (List<Point> l) {
-		System.out.println("The path is :");
 		for (Point point : l) {
 			System.out.println(point);
 		}
