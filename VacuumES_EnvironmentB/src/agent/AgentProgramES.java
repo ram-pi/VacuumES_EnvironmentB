@@ -140,7 +140,6 @@ public class AgentProgramES implements AgentProgram {
 		explorer = new ExplorerToDestination(this);
 		explorer.init(map.getBase().getPoint());
 		state = State.comingBackHome;
-		printStats();
 	}
 	
 	private void switchToCFAway() {
@@ -508,12 +507,6 @@ public class AgentProgramES implements AgentProgram {
 		
 		return act;
 
-	}
-
-	private void printStats() {
-		System.out.println("Map size: " + (map.getCols()*map.getRows()));
-		System.out.println("Energy Used: " + (energyUsed));
-		System.out.println("Percent: " + (double)(energyUsed)/(map.getCols()*map.getRows()));
 	}
 	
 }
