@@ -34,9 +34,9 @@ public class ExplorerToDestination implements ExplorerInterface {
 		Astar astar = new Astar(map);
 		astar.astar(map.getCurrentPositionPoint(), dest);
 		
-		/* TODO errore checking (can we arrive at destination???) */
+		
 		path = astar.getPointPath();
-		if (path.size() == 0) {
+		if (path != null && path.size() == 0) {
 			/* TODO we are at dest?? */
 			return null;
 		}
