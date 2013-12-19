@@ -124,8 +124,8 @@ public class AgentProgramES implements AgentProgram {
 		if (dirtyKnownPoints.size() == 0)
 			cleanedFarAway = true;
 		
-		//explorer = new ExplorerMushroomHunter(this);
-		explorer = new ExplorerDFS(this);
+		explorer = new ExplorerMushroomHunter(this);
+		//explorer = new ExplorerDFS(this);
 		explorer.init(map.getBase().getPoint());
 		state = State.baseKnownExploration;
 	}
