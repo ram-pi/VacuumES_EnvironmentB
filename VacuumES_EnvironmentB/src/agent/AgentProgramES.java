@@ -331,10 +331,11 @@ public class AgentProgramES implements AgentProgram {
 	private boolean checkConservativeExploring() {
 		
 		double estimatedUnobservedCells = (this.map.getRows()*this.map.getCols()) - map.getMap().keySet().size();
+
 		if (this.currentEnergy < estimatedUnobservedCells*1.4) {
-			System.out.println("GOING IN CONSERVATIVE MODE");
 			return true;
 		}
+		
 		return false;
 	}
 	
@@ -345,7 +346,6 @@ public class AgentProgramES implements AgentProgram {
 		while (state != State.NO_OP) {
 			
 			if (vep.getCurrentEnergy() == 0) {
-				System.out.println("NO MORE ENERGY");
 				state = State.NO_OP;
 				continue;
 			}
@@ -376,7 +376,6 @@ public class AgentProgramES implements AgentProgram {
 					
 					lastMovement = explorer.nextAction();
 					if (lastMovement == null && map.isCompletelyExplored()) {
-						System.out.println("ERROR: map completely epxlored but no base is found!");
 						return NoOpAction.NO_OP;
 					}
 					
@@ -390,7 +389,6 @@ public class AgentProgramES implements AgentProgram {
 					
 					lastMovement = explorer.nextAction();
 					if (lastMovement == null && map.isCompletelyExplored()) {
-						System.out.println("ERROR: map completely epxlored but no base is found!");
 						return NoOpAction.NO_OP;
 					}
 					
@@ -460,7 +458,6 @@ public class AgentProgramES implements AgentProgram {
 					lastMovement = explorer.nextAction();
 					/* I'm at home :) */
 					if (lastMovement == null) {
-						System.out.println("I've still "+vep.getCurrentEnergy()+ " E");
 						return NoOpAction.NO_OP;
 					}
 					
@@ -471,7 +468,6 @@ public class AgentProgramES implements AgentProgram {
 						
 			}
 		}
-		//System.out.println("CurrEnergy: " + vep.getCurrentEnergy());
 		return NoOpAction.NO_OP;
 	}
 
@@ -508,5 +504,6 @@ public class AgentProgramES implements AgentProgram {
 		return act;
 
 	}
+
 	
 }
