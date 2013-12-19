@@ -290,6 +290,26 @@ public class AgentProgramES implements AgentProgram {
 		return false;
 	}
 	
+	private boolean suck() {
+		
+		List<Point> toHome;
+		Astar astar = new Astar(map);
+		if (lastMovement == null && getFromBestPath(map.getCurrentPositionPoint(), map.getBase().getPoint()) != null)
+		{
+			toHome = getFromBestPath(map.getCurrentPositionPoint(), map.getBase().getPoint());
+		}
+		else {
+		toHome = astar.astar(map.getCurrentPositionPoint(), map.getBase().getPoint()).getPointPath();
+		putOnBestPath(map.getCurrentPositionPoint(), map.getBase().getPoint(), toHome);
+		}
+
+		/* TODO change for ENV C in an heuristic 2??? */
+		if (toHome.size() + 1 >= currentEnergy) 
+			return true;
+		return false;
+			
+	}
+	
 	private List<Point> makePathFromPoints(List<Point> cellToClean) {
 		Iterator<Point> it = cellToClean.iterator();
 		List<Point> ret = new LinkedList<Point>();
@@ -394,7 +414,8 @@ public class AgentProgramES implements AgentProgram {
 					return actionFromMovement(lastMovement);
 					
 				case baseKnownExploration:
-					if (!checkMinimalEnergy(vep.getCurrentEnergy())) {
+					
+					if (!checkMinimalEnergy(vep.getState().getLocState() == LocationState.Dirty?currentEnergy-1:currentEnergy)) {
 						switchToCBHome();
 						break;
 					}
@@ -428,7 +449,7 @@ public class AgentProgramES implements AgentProgram {
 
 					
 				case cleaningFarAway:
-					if (!checkMinimalEnergy(vep.getCurrentEnergy())) {
+					if (!checkMinimalEnergy(vep.getState().getLocState() == LocationState.Dirty?currentEnergy-1:currentEnergy)) {
 						switchToCBHome();
 						break;
 					}
@@ -447,10 +468,8 @@ public class AgentProgramES implements AgentProgram {
 					return actionFromMovement(lastMovement);
 					
 				case comingBackHome:
-					Astar astar = new Astar(map);
-					int eToBH = astar.astar(map.getCurrentPositionPoint(), map.getBase().getPoint()).getPointPath().size();
 					/* TODO expand for ENV C -- consider suck cost*/
-					if (vep.getState().getLocState() == LocationState.Dirty && vep.getCurrentEnergy() > eToBH) {
+					if (vep.getState().getLocState() == LocationState.Dirty && suck()) {
 						lastMovement = null;
 						return suck;
 					}
