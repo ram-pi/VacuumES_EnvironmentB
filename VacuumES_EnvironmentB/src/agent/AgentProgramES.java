@@ -190,8 +190,9 @@ public class AgentProgramES implements AgentProgram {
 		
 		if (dirtyPointConsidered.size() < 20) {
 			tc = new TourChooser(map, currentEnergy, dirtyPointConsidered);
-			if (tc.getPathHamiltonian().size() < currentEnergy) {
-				hamiltonianCycle  = tc.getPathHamiltonian();
+			List<Point> hamiltonianPath = tc.getPathHamiltonian();
+			if (hamiltonianPath.size() < currentEnergy) {
+				hamiltonianCycle  = hamiltonianPath;
 				cleanedFarAway = true;
 				return true;
 			}

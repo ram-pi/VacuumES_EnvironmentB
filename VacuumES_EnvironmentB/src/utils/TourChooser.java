@@ -83,11 +83,15 @@ public class TourChooser {
 		HamiltonianCycle ham = new HamiltonianCycle();
 		this.hamiltonianCycle = ham.getApproximateOptimalForCompleteGraph(this.graph);
 		Collections.reverse(this.hamiltonianCycle);
-		System.out.println(this.hamiltonianCycle);
+		System.out.println("The Hamiltonian cycle is -> " + this.hamiltonianCycle);
 	}
 
 	public List<Point> getPathHamiltonian() {
-		this.getBestHamiltonianTour();
+		if (this.hamiltonianCycle == null) {
+			this.getBestHamiltonianTour();
+		} else {
+			this.getBestHamiltonianTour();
+		}
 		List<Point> hamiltonianPath = new LinkedList<Point>();
 		Astar as = new Astar(this.map);
 		Point current = this.hamiltonianCycle.remove(0);
@@ -98,7 +102,7 @@ public class TourChooser {
 			hamiltonianPath.addAll(tempPath);
 			current = point;
 		}
-		System.out.println(hamiltonianPath);
+		System.out.println("The path to perform the cycle is -> " + hamiltonianPath);
 		return hamiltonianPath;
 	}
 
